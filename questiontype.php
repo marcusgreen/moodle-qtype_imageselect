@@ -45,30 +45,72 @@ class qtype_imageselect extends question_type {
 
       /* ties additional table fields to the database */
     public function extra_question_fields() {
-        return array('question_imageselect', 'somefieldname','anotherfieldname');
+       // return true;
+       // return array('question_imageselect');
     }
     public function move_files($questionid, $oldcontextid, $newcontextid) {
-        parent::move_files($questionid, $oldcontextid, $newcontextid);
-        $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
+   //     parent::move_files($questionid, $oldcontextid, $newcontextid);
+    //    $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
 
     protected function delete_files($questionid, $contextid) {
-        parent::delete_files($questionid, $contextid);
-        $this->delete_files_in_hints($questionid, $contextid);
+    //    parent::delete_files($questionid, $contextid);
+    //    $this->delete_files_in_hints($questionid, $contextid);
+    }
+     
+
+    /**
+     * @param stdClass $question
+     * @param array $form
+     * @return object
+     */
+    public function save_question($question, $form) {
+        return parent::save_question($question, $form);
     }
 
     public function save_question_options($question) {
-        //TODO
-        /* code to save answers to the question_answers table */
+      //TODO
+      /* save question specific data (to extra question fields) */
+      global $DB;
+      $options = $DB->get_record('question_imageselect', array('questionid' => $question->id));
+      if(!$options){
+        $options = new stdClass();
+        $options->questionid = $question->id;
+        $options->id = $DB->insert_record('question_imageselect', $options);
+      }
+      $options = $this->save_combined_feedback_helper($options, $question, $question->context, true);
+      $DB->update_record('question_imageselect', $options);
+        /* for fields apart from combined feedback ones */
+        parent::save_question_options($question);
         $this->save_hints($question);
+    }
+    /**
+     * Writes to the database, runs from question editing form
+     *
+     * @param stdClass $question
+     * @param stdClass $options
+     * @param context_course_object $context
+     */
+
+    public function update_imageselect($question) {
+        global $DB;
+        $options = $DB->get_record('question_imageselect', array('questionid' => $question->id));
+        if (!$options) {
+            $options = new stdClass();
+            $options->question = $question->id;
+            $options->correctfeedback = '';
+            $options->partiallycorrectfeedback = '';
+            $options->incorrectfeedback = '';
+            $options->id = $DB->insert_record('question_imageselect', $options);
+        }
+
+        $options = $this->save_combined_feedback_helper($options, $question, $question->contextid, true);
+        $DB->update_record('question_imageselect', $options);
     }
 
  /* populates fields such as combined feedback */
    public function get_question_options($question) {
-       global $DB;
-       $question->options = $DB->get_record('question_imageselect',
-               array('questionid' => $question->id), '*', MUST_EXIST);
-       parent::get_question_options($question);
+           parent::get_question_options($question);
     }
 
     protected function initialise_question_instance(question_definition $question, $questiondata) {
