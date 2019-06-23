@@ -45,11 +45,10 @@ class qtype_imageselect extends question_type {
 
       /* ties additional table fields to the database */
     public function extra_question_fields() {
-       // return true;
-       // return array('question_imageselect');
+     //   return array('question_imageselect','correctfeedback');
     }
     public function move_files($questionid, $oldcontextid, $newcontextid) {
-   //     parent::move_files($questionid, $oldcontextid, $newcontextid);
+     //   parent::move_files($questionid, $oldcontextid, $newcontextid);
     //    $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
 
@@ -110,13 +109,17 @@ class qtype_imageselect extends question_type {
 
  /* populates fields such as combined feedback */
    public function get_question_options($question) {
-           parent::get_question_options($question);
+    global $DB;
+    $question->options = $DB->get_record('question_imageselect',
+           array('questionid' => $question->id), '*', MUST_EXIST);
+    parent::get_question_options($question);       
     }
 
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $this->initialise_question_answers($question, $questiondata);
-        parent::initialise_combined_feedback($question, $questiondata);
+        $this->initialise_combined_feedback($question, $questiondata);
+
     }
     
    public function initialise_question_answers(question_definition $question, $questiondata,$forceplaintextanswers = true){ 
