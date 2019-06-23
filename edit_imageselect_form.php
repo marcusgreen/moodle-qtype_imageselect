@@ -40,7 +40,18 @@ class qtype_imageselect_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         //Add fields specific to this question type
         //remove any that come with the parent class you don't want
-        
+        $mform->removeelement('questiontext');
+        $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
+        $this->editoroptions);
+        $mform->setType('questiontext', PARAM_RAW);
+        $mform->addHelpButton('questiontext', 'questiontext', 'qtype_gapfill');
+        $mform->removeelement('defaultmark');
+        $mform->removeelement('generalfeedback');
+        $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question')
+        , array('rows' => 10), $this->editoroptions);
+        $mform->setType('generalfeedback', PARAM_RAW);
+        $mform->addHelpButton('generalfeedback', 'generalfeedback', 'question');
+
         // To add combined feedback (correct, partial and incorrect).
         $this->add_combined_feedback_fields(true);
         // Adds hinting features.
