@@ -45,6 +45,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->editoroptions);
         $mform->setType('questiontext', PARAM_RAW);
         $mform->addHelpButton('questiontext', 'questiontext', 'qtype_gapfill');
+        $item = $this->selectable_image($mform);
         $mform->removeelement('defaultmark');
         $mform->removeelement('generalfeedback');
         $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question')
@@ -56,6 +57,33 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->add_combined_feedback_fields(true);
         // Adds hinting features.
         $this->add_interactive_settings(true, true);
+    }
+
+    protected function selectable_image($mform) {
+        $selectableimage = [];
+
+        $selectableimage[] = $mform->createElement('filepicker', 'dragitem', '', null,
+                                    self::file_picker_options());
+        $selectableimage[] = $mform->createElement('text', 'imagelabel',
+                                                get_string('imagelabel', 'qtype_imageselect'),
+                                                ['size' => 30, 'class' => 'tweakcss draglabel']);
+        $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
+// Title of group should probably be blank. Put in a header instead.
+        $mform->addGroup($selectableimage,'selectableimage','Title of group', false);
+        return $selectableimage;
+    }
+      /**
+     * Options shared by all file pickers in the form.
+     *
+     * @return array Array of filepicker options.
+     */
+    public static function file_picker_options() {
+        $filepickeroptions = array();
+        $filepickeroptions['accepted_types'] = array('web_image');
+        $filepickeroptions['maxbytes'] = 0;
+        $filepickeroptions['maxfiles'] = 1;
+        $filepickeroptions['subdirs'] = 0;
+        return $filepickeroptions;
     }
 
     protected function data_preprocessing($question) {
