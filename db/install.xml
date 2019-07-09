@@ -7,7 +7,7 @@
     <TABLE NAME="question_imageselect" COMMENT="options for the overall question">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="question"/>
-        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id" P />
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id" />
         <FIELD NAME="correctfeedback" TYPE="text" NOTNULL="false" SEQUENCE="false"  />
         <FIELD NAME="correctfeedbackformat" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" />
         <FIELD NAME="partiallycorrectfeedback" TYPE="text" NOTNULL="false" SEQUENCE="false" />
