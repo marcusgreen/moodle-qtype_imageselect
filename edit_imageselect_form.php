@@ -36,6 +36,16 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_imageselect_edit_form extends question_edit_form {
+    /**
+     * The number of drop zones that get added at a time.
+     */
+    const ADD_NUM_ITEMS = 1;
+
+    /**
+     * The default starting number of drop zones.
+     */
+    const START_NUM_ITEMS = 4;
+
 
     protected function definition_inner($mform) {
         //Add fields specific to this question type
@@ -45,7 +55,11 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->editoroptions);
         $mform->setType('questiontext', PARAM_RAW);
         $mform->addHelpButton('questiontext', 'questiontext', 'qtype_gapfill');
-        $item = $this->selectable_image($mform);
+        //based on qtype_ddtoimage_edit_form_base
+        list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
+        $this->definition_selectable_images($mform, $itemrepeatsatstart);
+
+       // $item = $this->selectable_image($mform);
         $mform->removeelement('defaultmark');
         $mform->removeelement('generalfeedback');
         $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question')
@@ -59,18 +73,38 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->add_interactive_settings(true, true);
     }
 
-    protected function selectable_image($mform) {
-        $selectableimage = [];
+    protected function definition_selectable_images($mform, $itemrepeatsatstart) {
+        $this->repeat_elements($this->selectable_image($mform), $itemrepeatsatstart,
+                $this->selectable_image_repeated_options(),
+                'noitems', 'additems', self::ADD_NUM_ITEMS,
+                get_string('addmoreimages', 'qtype_ddimageortext'), true);
+    }
 
-        $selectableimage[] = $mform->createElement('filepicker', 'dragitem', '', null,
+
+    protected function selectable_image_repeated_options() {
+        $repeatedoptions = [];
+        $repeatedoptions['draggroup']['default'] = '1';
+        return $repeatedoptions;
+    }
+
+
+    protected function selectable_image($mform) {
+        //see draggable_item l 138
+  //     https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
+        $selectableimageitem = [];
+
+        $options = array();
+
+
+        $selectableimageitem[] = $mform->createElement('filepicker', 'dragitem', '', null,
                                     self::file_picker_options());
-        $selectableimage[] = $mform->createElement('text', 'imagelabel',
+        $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
                                                 get_string('imagelabel', 'qtype_imageselect'),
                                                 ['size' => 30, 'class' => 'tweakcss draglabel']);
         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
 // Title of group should probably be blank. Put in a header instead.
-        $mform->addGroup($selectableimage,'selectableimage','Title of group', false);
-        return $selectableimage;
+    //    $mform->addGroup($selectableimageitem,'selectableimage','Title of group', false);
+        return $selectableimageitem;
     }
       /**
      * Options shared by all file pickers in the form.
@@ -86,6 +120,29 @@ class qtype_imageselect_edit_form extends question_edit_form {
         return $filepickeroptions;
     }
 
+        /**
+     * Returns an array of starting number of repeats, and the total number of repeats.
+     *
+     * @return array
+     */
+    protected function get_image_item_repeats() {
+        $countimages = 0;
+        if (isset($this->question->id)) {
+            // foreach ($this->question->options->drags as $drag) {
+            //     $countimages = max($countimages, $drag->no);
+            // }
+        }
+        if (!$countimages) {
+            $countimages = self::START_NUM_ITEMS;
+        }
+        $itemrepeatsatstart = $countimages;
+        $imagerepeats = optional_param('noitems', $itemrepeatsatstart, PARAM_INT);
+        $addfields = optional_param('additems', false, PARAM_BOOL);
+        if ($addfields) {
+            $imagerepeats += self::ADD_NUM_ITEMS;
+        }
+        return array($itemrepeatsatstart, $imagerepeats);
+    }
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_hints($question);
