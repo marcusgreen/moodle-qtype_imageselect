@@ -59,7 +59,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
         list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
         $this->definition_selectable_images($mform, $itemrepeatsatstart);
 
-       // $item = $this->selectable_image($mform);
         $mform->removeelement('defaultmark');
         $mform->removeelement('generalfeedback');
         $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question')
@@ -90,20 +89,18 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
     protected function selectable_image($mform) {
         //see draggable_item l 138
-  //     https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
+     https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
         $selectableimageitem = [];
 
-        $options = array();
+        $selectableimageitem[] = $mform->createElement('group', 'drags',
+        get_string('selectableitemheader', 'qtype_imageselect', '{no}'));
 
-
-        $selectableimageitem[] = $mform->createElement('filepicker', 'dragitem', '', null,
+        $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
                                     self::file_picker_options());
         $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
                                                 get_string('imagelabel', 'qtype_imageselect'),
                                                 ['size' => 30, 'class' => 'tweakcss draglabel']);
         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
-// Title of group should probably be blank. Put in a header instead.
-    //    $mform->addGroup($selectableimageitem,'selectableimage','Title of group', false);
         return $selectableimageitem;
     }
       /**

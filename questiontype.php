@@ -67,21 +67,31 @@ class qtype_imageselect extends question_type {
         return parent::save_question($question, $form);
     }
 
-    public function save_question_options($question) {
+    public function save_question_options($formdata) {
       //TODO
       /* save question specific data (to extra question fields) */
-      global $DB;
-      $options = $DB->get_record('question_imageselect', array('questionid' => $question->id));
+      global $DB,$USER;
+      $context = $formdata->context;
+      $options = $DB->get_record('question_imageselect', array('questionid' => $formdata->id));
       if(!$options){
         $options = new stdClass();
-        $options->questionid = $question->id;
+        $options->questionid = $formdata->id;
         $options->id = $DB->insert_record('question_imageselect', $options);
       }
-      $options = $this->save_combined_feedback_helper($options, $question, $question->context, true);
+      $options = $this->save_combined_feedback_helper($options, $formdata, $formdata->context, true);
       $DB->update_record('question_imageselect', $options);
         /* for fields apart from combined feedback ones */
-        parent::save_question_options($question);
-        $this->save_hints($question);
+        parent::save_question_options($formdata);
+        $this->save_hints($formdata);
+        foreach (array_keys($formdata->imageitem) as $imageno) {
+            $image = new stdClass();
+            $image->questionid = $formdata->id;
+            $image->no = $imageno + 1;
+            $image->label = $formdata->images[$imageno]['imagelabel'];
+            $DB->insert_record('question_imageselect_images', $image);
+        }
+
+
     }
     /**
      * Writes to the database, runs from question editing form
