@@ -46,7 +46,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
      */
     const START_NUM_ITEMS = 4;
 
-
     protected function definition_inner($mform) {
         //Add fields specific to this question type
         //remove any that come with the parent class you don't want
@@ -76,24 +75,36 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->repeat_elements($this->selectable_image($mform), $itemrepeatsatstart,
                 $this->selectable_image_repeated_options(),
                 'noitems', 'additems', self::ADD_NUM_ITEMS,
-                get_string('addmoreimages', 'qtype_ddimageortext'), true);
+                get_string('addmoreimages', 'qtype_imageselect'), true);
     }
 
+    public function data_preprocessing($question) {
+        $imageids = []; // Drag no -> dragid.
+        if (!empty($question->options)) {
+            $question->images = [];
+            // foreach ($question->options->images as $image) {
+            //     $imageindex = $image->no - 1;
+            //     $question->imagelabel[$imageindex] = $image->label;
+            //     $imageids[$imageindex] = $image->id;
+
+            // }
+
+    }
+}
 
     protected function selectable_image_repeated_options() {
         $repeatedoptions = [];
-        $repeatedoptions['draggroup']['default'] = '1';
+        $repeatedoptions['imagegroup']['default'] = '1';
         return $repeatedoptions;
     }
 
-
     protected function selectable_image($mform) {
         //see draggable_item l 138
-     https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
+    // https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
         $selectableimageitem = [];
 
-        $selectableimageitem[] = $mform->createElement('group', 'drags',
-        get_string('selectableitemheader', 'qtype_imageselect', '{no}'));
+        // $selectableimageitem[] = $mform->createElement('group', 'images',
+        // get_string('selectableitemheader', 'qtype_imageselect', '{no}'));
 
         $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
                                     self::file_picker_options());
@@ -140,12 +151,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         }
         return array($itemrepeatsatstart, $imagerepeats);
     }
-    protected function data_preprocessing($question) {
-        $question = parent::data_preprocessing($question);
-        $question = $this->data_preprocessing_hints($question);
 
-        return $question;
-    }
 
     public function qtype() {
         return 'imageselect';
