@@ -87,10 +87,23 @@ class qtype_imageselect extends question_type {
             $image = new stdClass();
             $image->questionid = $formdata->id;
             $image->no = $imageno + 1;
-            $image->label = $formdata->images[$imageno]['imagelabel'];
-            $DB->insert_record('question_imageselect_images', $image);
+            $image->label = $formdata->imagelabel[$imageno];
+            $image->id = $DB->insert_record('question_imageselect_images', $image);
+        
+        // An array of drag no -> drag id.
+        $imageids = $DB->get_records_menu('question_imageselect_images',
+                                    array('questionid' => $formdata->id),
+                                    '', 'no, id');
+        foreach (array_keys($formdata->images) as $imageno) {
+            $info = file_get_draft_area_info($formdata->imageitem[$imageno]);
+            if ($info['filecount'] > 0 || (trim($formdata->imagelabel[$imageno]) != '')) {
+                $draftitemid = $formdata->imageitem[$imageno];
+                file_save_draft_area_files($draftitemid, $formdata->context->id,
+                'question_imageselect', 'image', $image->id,
+                array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1));
+            }
         }
-
+    }
 
     }
     /**
@@ -118,12 +131,31 @@ class qtype_imageselect extends question_type {
     }
 
  /* populates fields such as combined feedback */
-   public function get_question_options($question) {
+   public function get_question_options($formdata) {
     global $DB;
-    $question->options = $DB->get_record('question_imageselect',
-           array('questionid' => $question->id), '*', MUST_EXIST);
-    parent::get_question_options($question);       
-    }
+    $formdata->options = $DB->get_record('question_imageselect',
+           ['questionid' => $formdata->id], '*', MUST_EXIST);
+    $formdata->options->images = $DB->get_records('question_imageselect_images',
+           ['questionid' => $formdata->id], 'no ASC', '*');
+    parent::get_question_options($formdata);
+    foreach (array_keys($formdata->images) as $imageno) {
+        echo $imageno;
+    // if ($formdata->images[$dragno]['dragitemtype'] == 'image') {
+    //     self::constrain_image_size_in_draft_area($draftitemid,
+    //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXWIDTH,
+    //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXHEIGHT);
+    //     file_save_draft_area_files($draftitemid, $formdata->context->id,
+    //                         'qtype_ddimageortext', 'dragimage', $drag->id,
+    //                         array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1));
+    // } else {
+    //     // Delete any existing files for draggable text item type.
+    //     $fs = get_file_storage();
+    //     $fs->delete_area_files($formdata->context->id, 'qtype_ddimageortext',
+    //                                                 'dragimage', $drag->id);
+    // }
+
+     }
+}
 
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);

@@ -82,14 +82,28 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $imageids = []; // Drag no -> dragid.
         if (!empty($question->options)) {
             $question->images = [];
-            // foreach ($question->options->images as $image) {
-            //     $imageindex = $image->no - 1;
-            //     $question->imagelabel[$imageindex] = $image->label;
-            //     $imageids[$imageindex] = $image->id;
+            foreach ($question->options->images as $image) {
+                $imageindex = $image->no - 1;
+                $question->imagelabel[$imageindex] = $image->label;
+                $imageids[$imageindex] = $image->id;
 
-            // }
+            }
+                // Initialise file picker for dragimages.
+        list(, $imagerepeats) = $this->get_image_item_repeats();
+        $draftitemids = optional_param_array('imageitem', array(), PARAM_INT);
+            for ($imageindex = 0; $imageindex < $imagerepeats; $imageindex++) {
+                $draftitemid = isset($draftitemids[$imageindex]) ? $draftitemids[$imageindex] : 0;
+                // Numbers not allowed in filearea name.
+                $itemid = isset($imageids[$imageindex]) ? $imageids[$imageindex] : null;
+                file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_imageselect',
+                                    'dragimage', $itemid, self::file_picker_options());
+                $question->imageitem[$imageindex] = $draftitemid;
+            }
+
 
     }
+    return $question;
+
 }
 
     protected function selectable_image_repeated_options() {
@@ -100,11 +114,14 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
     protected function selectable_image($mform) {
         //see draggable_item l 138
-    // https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
-        $selectableimageitem = [];
+     https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
+     $selectableimageitem = [];
+     $grouparray =[]; 
 
-        // $selectableimageitem[] = $mform->createElement('group', 'images',
-        // get_string('selectableitemheader', 'qtype_imageselect', '{no}'));
+        $grouparray[] = $mform->createElement('advcheckbox', 'iscorrect', ' ',
+        get_string('iscorrect', 'qtype_imageselect'));
+         $selectableimageitem[] = $mform->createElement('group', 'images',
+         get_string('selectableitemheader', 'qtype_imageselect', '{no}'),$grouparray);
 
         $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
                                     self::file_picker_options());
@@ -152,6 +169,12 @@ class qtype_imageselect_edit_form extends question_edit_form {
         return array($itemrepeatsatstart, $imagerepeats);
     }
 
+    public function validation($data, $files) {
+        for ($imageindex = 0; $imageindex < $data['noitems']; $imageindex++) {
+            $label = $data['imagelabel'][$imageindex];
+        }
+        $errors = parent::validation($data, $files);
+    }
 
     public function qtype() {
         return 'imageselect';
