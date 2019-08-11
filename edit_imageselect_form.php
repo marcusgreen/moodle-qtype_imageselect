@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,22 +18,15 @@
 /**
  * Defines the editing form for the imageselect question type.
  *
- * @package    qtype
- * @subpackage imageselect
  * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
-
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
 defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * imageselect question editing form definition.
  *
- * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
-
+ * @copyright  Marcus Green 2019
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_imageselect_edit_form extends question_edit_form {
@@ -45,6 +39,93 @@ class qtype_imageselect_edit_form extends question_edit_form {
      * The default starting number of drop zones.
      */
     const START_NUM_ITEMS = 4;
+
+    public function data_preprocessing($question) {
+        $imageids = []; // Drag no -> dragid.
+        // Initialise file picker for images.
+
+        if (!empty($question->options)) {
+            $question->images = [];
+            foreach ($question->options->images as $image) {
+                $imageindex = $image->no - 1;
+                $question->images[$imageindex] = [];
+                // $question->draglabel[$dragindex] = $drag->label;
+                // $question->drags[$dragindex]['infinite'] = $drag->infinite;
+                // $question->drags[$dragindex]['draggroup'] = $drag->draggroup;
+                $imageids[$imageindex] = $image->id;
+            }
+            // Initialise file picker for images.
+            list(, $imagerepeats) = $this->get_image_item_repeats();
+            $draftitemids = optional_param_array('imageitem', [], PARAM_INT);
+            for ($imageindex = 0; $imageindex < $imagerepeats; ++$imageindex) {
+                $draftitemid = $draftitemids[$imageindex] ?? 0;
+                // Numbers not allowed in filearea name.
+                $itemid = $imageids[$imageindex] ?? null;
+                file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_imageselect',
+                                        'selectableimage', $itemid, self::file_picker_options());
+                $question->imageitem[$imageindex] = $draftitemid;
+            }
+            foreach ($question->options->images as $image) {
+                // this should populate the file pickers with existing files
+                $imageindex = $image->no - 1;
+                if (!isset($question->imageitem[$imageindex])) {
+                    /** used if there will be a lable/text entry */
+                    $fileexists = false;
+                } else {
+                    $fileexists = self::file_uploaded($question->imageitem[$imageindex]);
+                }
+                $question->imagelabel[$imageindex] = $image->label;
+                $imageids[$imageindex] = $image->id;
+            }
+        }
+
+        return $question;
+    }
+
+    /**
+     * Checks to see if a file has been uploaded.
+     *
+     * @param string $draftitemid The draft id
+     *
+     * @return bool true if files exist, false if not
+     */
+    public static function file_uploaded($draftitemid) {
+        $draftareafiles = file_get_drafarea_files($draftitemid);
+        do {
+            $draftareafile = array_shift($draftareafiles->list);
+        } while (null !== $draftareafile && '.' == $draftareafile->filename);
+        if (null === $draftareafile) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Options shared by all file pickers in the form.
+     *
+     * @return array array of filepicker options
+     */
+    public static function file_picker_options() {
+        $filepickeroptions = [];
+        $filepickeroptions['accepted_types'] = ['web_image'];
+        $filepickeroptions['maxbytes'] = 0;
+        $filepickeroptions['maxfiles'] = 1;
+        $filepickeroptions['subdirs'] = 0;
+
+        return $filepickeroptions;
+    }
+
+    public function validation($data, $files) {
+        for ($imageindex = 0; $imageindex < $data['noitems']; ++$imageindex) {
+            $label = $data['imagelabel'][$imageindex];
+        }
+        $errors = parent::validation($data, $files);
+    }
+
+    public function qtype() {
+        return 'imageselect';
+    }
 
     protected function definition_inner($mform) {
         //Add fields specific to this question type
@@ -60,8 +141,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
         $mform->removeelement('defaultmark');
         $mform->removeelement('generalfeedback');
-        $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question')
-        , array('rows' => 10), $this->editoroptions);
+        $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question'), ['rows' => 10], $this->editoroptions);
         $mform->setType('generalfeedback', PARAM_RAW);
         $mform->addHelpButton('generalfeedback', 'generalfeedback', 'question');
 
@@ -78,37 +158,10 @@ class qtype_imageselect_edit_form extends question_edit_form {
                 get_string('addmoreimages', 'qtype_imageselect'), true);
     }
 
-    public function data_preprocessing($question) {
-        $imageids = []; // Drag no -> dragid.
-        if (!empty($question->options)) {
-            $question->images = [];
-            foreach ($question->options->images as $image) {
-                $imageindex = $image->no - 1;
-                $question->imagelabel[$imageindex] = $image->label;
-                $imageids[$imageindex] = $image->id;
-
-            }
-                // Initialise file picker for dragimages.
-        list(, $imagerepeats) = $this->get_image_item_repeats();
-        $draftitemids = optional_param_array('imageitem', array(), PARAM_INT);
-            for ($imageindex = 0; $imageindex < $imagerepeats; $imageindex++) {
-                $draftitemid = isset($draftitemids[$imageindex]) ? $draftitemids[$imageindex] : 0;
-                // Numbers not allowed in filearea name.
-                $itemid = isset($imageids[$imageindex]) ? $imageids[$imageindex] : null;
-                file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_imageselect',
-                                    'dragimage', $itemid, self::file_picker_options());
-                $question->imageitem[$imageindex] = $draftitemid;
-            }
-
-
-    }
-    return $question;
-
-}
-
     protected function selectable_image_repeated_options() {
         $repeatedoptions = [];
         $repeatedoptions['imagegroup']['default'] = '1';
+
         return $repeatedoptions;
     }
 
@@ -116,12 +169,12 @@ class qtype_imageselect_edit_form extends question_edit_form {
         //see draggable_item l 138
      https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
      $selectableimageitem = [];
-     $grouparray =[]; 
+        $grouparray = [];
 
         $grouparray[] = $mform->createElement('advcheckbox', 'iscorrect', ' ',
         get_string('iscorrect', 'qtype_imageselect'));
-         $selectableimageitem[] = $mform->createElement('group', 'images',
-         get_string('selectableitemheader', 'qtype_imageselect', '{no}'),$grouparray);
+        $selectableimageitem[] = $mform->createElement('group', 'images',
+         get_string('selectableitemheader', 'qtype_imageselect', '{no}'), $grouparray);
 
         $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
                                     self::file_picker_options());
@@ -131,21 +184,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
         return $selectableimageitem;
     }
-      /**
-     * Options shared by all file pickers in the form.
-     *
-     * @return array Array of filepicker options.
-     */
-    public static function file_picker_options() {
-        $filepickeroptions = array();
-        $filepickeroptions['accepted_types'] = array('web_image');
-        $filepickeroptions['maxbytes'] = 0;
-        $filepickeroptions['maxfiles'] = 1;
-        $filepickeroptions['subdirs'] = 0;
-        return $filepickeroptions;
-    }
 
-        /**
+    /**
      * Returns an array of starting number of repeats, and the total number of repeats.
      *
      * @return array
@@ -166,17 +206,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         if ($addfields) {
             $imagerepeats += self::ADD_NUM_ITEMS;
         }
-        return array($itemrepeatsatstart, $imagerepeats);
-    }
 
-    public function validation($data, $files) {
-        for ($imageindex = 0; $imageindex < $data['noitems']; $imageindex++) {
-            $label = $data['imagelabel'][$imageindex];
-        }
-        $errors = parent::validation($data, $files);
-    }
-
-    public function qtype() {
-        return 'imageselect';
+        return [$itemrepeatsatstart, $imagerepeats];
     }
 }

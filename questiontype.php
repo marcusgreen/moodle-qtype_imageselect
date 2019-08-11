@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,15 +18,11 @@
 /**
  * Question type class for the imageselect question type.
  *
- * @package    qtype
- * @subpackage imageselect
  * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
-
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
- /*https://docs.moodle.org/dev/Question_types#Question_type_and_question_definition_classes*/
 
+// https://docs.moodle.org/dev/Question_types#Question_type_and_question_definition_classes
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,34 +30,27 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/type/imageselect/question.php');
 
-
 /**
  * The imageselect question type.
  *
  * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
-
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_imageselect extends question_type {
-
-      /* ties additional table fields to the database */
+    // ties additional table fields to the database
     public function extra_question_fields() {
-     //   return array('question_imageselect','correctfeedback');
-    }
-    public function move_files($questionid, $oldcontextid, $newcontextid) {
-     //   parent::move_files($questionid, $oldcontextid, $newcontextid);
-    //    $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
+        //   return array('question_imageselect','correctfeedback');
     }
 
-    protected function delete_files($questionid, $contextid) {
-    //    parent::delete_files($questionid, $contextid);
-    //    $this->delete_files_in_hints($questionid, $contextid);
+    public function move_files($questionid, $oldcontextid, $newcontextid) {
+        //   parent::move_files($questionid, $oldcontextid, $newcontextid);
+        //    $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
-     
 
     /**
      * @param stdClass $question
-     * @param array $form
+     * @param array    $form
+     *
      * @return object
      */
     public function save_question($question, $form) {
@@ -68,19 +58,22 @@ class qtype_imageselect extends question_type {
     }
 
     public function save_question_options($formdata) {
-      //TODO
-      /* save question specific data (to extra question fields) */
-      global $DB,$USER;
-      $context = $formdata->context;
-      $options = $DB->get_record('question_imageselect', array('questionid' => $formdata->id));
-      if(!$options){
-        $options = new stdClass();
-        $options->questionid = $formdata->id;
-        $options->id = $DB->insert_record('question_imageselect', $options);
-      }
-      $options = $this->save_combined_feedback_helper($options, $formdata, $formdata->context, true);
-      $DB->update_record('question_imageselect', $options);
-        /* for fields apart from combined feedback ones */
+        //TODO
+        // save question specific data (to extra question fields)
+        global $DB, $USER;
+        $context = $formdata->context;
+        $options = $DB->get_record('question_imageselect', ['questionid' => $formdata->id]);
+        if (!$options) {
+            $options = new stdClass();
+            $options->questionid = $formdata->id;
+            $options->correctfeedback = '';
+            $options->partiallycorrectfeedback = '';
+            $options->incorrectfeedback = '';
+            $options->id = $DB->insert_record('question_imageselect', $options);
+        }
+        $options = $this->save_combined_feedback_helper($options, $formdata, $formdata->context, true);
+        $DB->update_record('question_imageselect', $options);
+        // for fields apart from combined feedback ones
         parent::save_question_options($formdata);
         $this->save_hints($formdata);
         foreach (array_keys($formdata->imageitem) as $imageno) {
@@ -89,34 +82,52 @@ class qtype_imageselect extends question_type {
             $image->no = $imageno + 1;
             $image->label = $formdata->imagelabel[$imageno];
             $image->id = $DB->insert_record('question_imageselect_images', $image);
-        
-        // An array of drag no -> drag id.
-        $imageids = $DB->get_records_menu('question_imageselect_images',
-                                    array('questionid' => $formdata->id),
-                                    '', 'no, id');
-        foreach (array_keys($formdata->images) as $imageno) {
-            $info = file_get_draft_area_info($formdata->imageitem[$imageno]);
-            if ($info['filecount'] > 0 || (trim($formdata->imagelabel[$imageno]) != '')) {
-                $draftitemid = $formdata->imageitem[$imageno];
-                file_save_draft_area_files($draftitemid, $formdata->context->id,
-                'question_imageselect', 'image', $image->id,
-                array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1));
+
+            // An array of image no -> image id.
+            $oldimageids = $DB->get_records_menu(
+                'question_imageselect_images',
+                ['questionid' => $formdata->id],
+                '',
+                'no, id'
+            );
+            foreach (array_keys($formdata->images) as $imageno) {
+                $info = file_get_draft_area_info($formdata->imageitem[$imageno]);
+                if ($info['filecount'] > 0 || ('' != trim($formdata->imagelabel[$imageno]))) {
+                    $draftitemid = $formdata->imageitem[$imageno];
+                    if (isset($oldimageids[$imageno + 1])) {
+                        $image->id = $oldimageids[$imageno + 1];
+                        unset($oldimageids[$imageno + 1]);
+                        $DB->update_record('question_imageselect_images', $image);
+                    } else {
+                        $image->id = $DB->insert_record('question_imageselect_images', $image);
+                    }
+                    file_save_draft_area_files(
+                        $draftitemid,
+                        $formdata->context->id,
+                        'qtype_imageselect',
+                        'selectableimage',
+                        $image->id,
+                        ['subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1]
+                    );
+                }
+            }
+            if (!empty($oldimageids)) {
+                list($sql, $params) = $DB->get_in_or_equal(array_values($oldimageids));
+                $DB->delete_records_select('question_imageselect_images', "id {$sql}", $params);
             }
         }
     }
 
-    }
     /**
-     * Writes to the database, runs from question editing form
+     * Writes to the database, runs from question editing form.
      *
-     * @param stdClass $question
-     * @param stdClass $options
+     * @param stdClass              $question
+     * @param stdClass              $options
      * @param context_course_object $context
      */
-
     public function update_imageselect($question) {
         global $DB;
-        $options = $DB->get_record('question_imageselect', array('questionid' => $question->id));
+        $options = $DB->get_record('question_imageselect', ['questionid' => $question->id]);
         if (!$options) {
             $options = new stdClass();
             $options->question = $question->id;
@@ -130,53 +141,55 @@ class qtype_imageselect extends question_type {
         $DB->update_record('question_imageselect', $options);
     }
 
- /* populates fields such as combined feedback */
-   public function get_question_options($formdata) {
-    global $DB;
-    $formdata->options = $DB->get_record('question_imageselect',
-           ['questionid' => $formdata->id], '*', MUST_EXIST);
-    $formdata->options->images = $DB->get_records('question_imageselect_images',
-           ['questionid' => $formdata->id], 'no ASC', '*');
-    parent::get_question_options($formdata);
-    foreach (array_keys($formdata->images) as $imageno) {
-        echo $imageno;
-    // if ($formdata->images[$dragno]['dragitemtype'] == 'image') {
-    //     self::constrain_image_size_in_draft_area($draftitemid,
-    //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXWIDTH,
-    //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXHEIGHT);
-    //     file_save_draft_area_files($draftitemid, $formdata->context->id,
-    //                         'qtype_ddimageortext', 'dragimage', $drag->id,
-    //                         array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1));
-    // } else {
-    //     // Delete any existing files for draggable text item type.
-    //     $fs = get_file_storage();
-    //     $fs->delete_area_files($formdata->context->id, 'qtype_ddimageortext',
-    //                                                 'dragimage', $drag->id);
-    // }
+    // populates fields such as combined feedback
+    public function get_question_options($formdata) {
+        global $DB;
+        $formdata->options = $DB->get_record(
+            'question_imageselect',
+            ['questionid' => $formdata->id],
+            '*',
+            MUST_EXIST
+        );
+        $formdata->options->images = $DB->get_records(
+            'question_imageselect_images',
+            ['questionid' => $formdata->id],
+            'no ASC',
+            '*'
+        );
+        parent::get_question_options($formdata);
+        //foreach (array_keys($formdata->images) as $imageno) {
+        // if ($formdata->images[$dragno]['dragitemtype'] == 'image') {
+        //     self::constrain_image_size_in_draft_area($draftitemid,
+        //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXWIDTH,
+        //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXHEIGHT);
+        //     file_save_draft_area_files($draftitemid, $formdata->context->id,
+        //                         'qtype_ddimageortext', 'dragimage', $drag->id,
+        //                         array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1));
+        // } else {
+        //     // Delete any existing files for draggable text item type.
+        //     $fs = get_file_storage();
+        //     $fs->delete_area_files($formdata->context->id, 'qtype_ddimageortext',
+        //                                                 'dragimage', $drag->id);
+        // }
 
-     }
-}
-
-    protected function initialise_question_instance(question_definition $question, $questiondata) {
-        parent::initialise_question_instance($question, $questiondata);
-        $this->initialise_question_answers($question, $questiondata);
-        $this->initialise_combined_feedback($question, $questiondata);
-
+        // }
     }
-    
-   public function initialise_question_answers(question_definition $question, $questiondata,$forceplaintextanswers = true){ 
-     //TODO
+
+    public function initialise_question_answers(question_definition $question, $questiondata, $forceplaintextanswers = true) {
+        //TODO
     }
-    
+
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
-        if (!isset($data['@']['type']) || $data['@']['type'] != 'question_imageselect') {
+        if (!isset($data['@']['type']) || 'question_imageselect' != $data['@']['type']) {
             return false;
         }
         $question = parent::import_from_xml($data, $question, $format, null);
         $format->import_combined_feedback($question, $data, true);
         $format->import_hints($question, $data, true, false, $format->get_format($question->questiontextformat));
+
         return $question;
     }
+
     public function export_to_xml($question, qformat_xml $format, $extra = null) {
         global $CFG;
         $pluginmanager = core_plugin_manager::instance();
@@ -184,9 +197,9 @@ class qtype_imageselect extends question_type {
         $output = parent::export_to_xml($question, $format);
         //TODO
         $output .= $format->write_combined_feedback($question->options, $question->id, $question->contextid);
+
         return $output;
     }
-
 
     public function get_random_guess_score($questiondata) {
         // TODO.
@@ -195,6 +208,23 @@ class qtype_imageselect extends question_type {
 
     public function get_possible_responses($questiondata) {
         // TODO.
-        return array();
+        return [];
+    }
+
+    protected function delete_files($questionid, $contextid) {
+        //    parent::delete_files($questionid, $contextid);
+        //    $this->delete_files_in_hints($questionid, $contextid);
+    }
+
+    /**
+     * Executed at runtime (in a quiz or preview).
+     *
+     * @param question_definition $question
+     * @param [type]              $questiondata
+     */
+    protected function initialise_question_instance(question_definition $question, $questiondata) {
+        parent::initialise_question_instance($question, $questiondata);
+        $this->initialise_question_answers($question, $questiondata);
+        $this->initialise_combined_feedback($question, $questiondata);
     }
 }
