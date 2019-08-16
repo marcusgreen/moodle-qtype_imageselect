@@ -60,7 +60,7 @@ class qtype_imageselect extends question_type {
     public function save_question_options($formdata) {
         //TODO
         // save question specific data (to extra question fields)
-        global $DB, $USER;
+        global $DB;
         $context = $formdata->context;
         $options = $DB->get_record('question_imageselect', ['questionid' => $formdata->id]);
         if (!$options) {
@@ -76,21 +76,15 @@ class qtype_imageselect extends question_type {
         // for fields apart from combined feedback ones
         parent::save_question_options($formdata);
         $this->save_hints($formdata);
+        // An array of drag no -> drag id.
+        $oldimageids = $DB->get_records_menu('question_imageselect_images',
+        ['questionid' => $formdata->id],
+        '', 'no, id');
         foreach (array_keys($formdata->imageitem) as $imageno) {
             $image = new stdClass();
             $image->questionid = $formdata->id;
             $image->no = $imageno + 1;
             $image->label = $formdata->imagelabel[$imageno];
-            $image->id = $DB->insert_record('question_imageselect_images', $image);
-
-            // An array of image no -> image id.
-            $oldimageids = $DB->get_records_menu(
-                'question_imageselect_images',
-                ['questionid' => $formdata->id],
-                '',
-                'no, id'
-            );
-            foreach (array_keys($formdata->images) as $imageno) {
                 $info = file_get_draft_area_info($formdata->imageitem[$imageno]);
                 if ($info['filecount'] > 0 || ('' != trim($formdata->imagelabel[$imageno]))) {
                     $draftitemid = $formdata->imageitem[$imageno];
@@ -110,12 +104,13 @@ class qtype_imageselect extends question_type {
                         ['subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1]
                     );
                 }
-            }
+        }
             if (!empty($oldimageids)) {
                 list($sql, $params) = $DB->get_in_or_equal(array_values($oldimageids));
                 $DB->delete_records_select('question_imageselect_images', "id {$sql}", $params);
             }
-        }
+        
+        
     }
 
     /**

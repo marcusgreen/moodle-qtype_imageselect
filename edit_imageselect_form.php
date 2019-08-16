@@ -175,9 +175,15 @@ class qtype_imageselect_edit_form extends question_edit_form {
         get_string('iscorrect', 'qtype_imageselect'));
         $selectableimageitem[] = $mform->createElement('group', 'images',
          get_string('selectableitemheader', 'qtype_imageselect', '{no}'), $grouparray);
+        //  if (isset($company['scs_company_logo'])) {
+        //     $image = '<img src="'.$company['scs_company_logo'].'" height="128" width="128"></img>';
+        //     $mform->addElement('static', 'imageitem', 'Company Logo', $image);
+        // }
 
-        $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
-                                    self::file_picker_options());
+        // $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
+        //                            self::file_picker_options());
+          $selectableimageitem[] =$mform->createElement('filemanager', 'imageitem', get_string('files'), null, array('subdirs'=>0, 'accepted_types'=>'*'));
+
         $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
                                                 get_string('imagelabel', 'qtype_imageselect'),
                                                 ['size' => 30, 'class' => 'tweakcss draglabel']);
