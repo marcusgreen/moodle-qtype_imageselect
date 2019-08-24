@@ -19,7 +19,7 @@
  *
  * @package    qtype
  * @subpackage imageselect
- * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
+ * @copyright  Marcus Green 2019
 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,19 +31,29 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Generates the output for imageselect questions.
  *
- * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
-
+ * @copyright  Marcus Green 2019
+*
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_imageselect_renderer extends qtype_renderer {
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
 
+                global $PAGE;
+
         $question = $qa->get_question();
+        $response = $qa->get_last_qt_data();
 
         $questiontext = $question->format_questiontext($qa);
+        $i=0;
+        foreach ($question->images as $image ) {
+            $i++;
+        }
+
+    
        
         $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+
         /* Some code to restore the state of the question as you move back and forth
         from one question to another in a quiz and some code to disable the input fields
         once a quesiton is submitted/marked */

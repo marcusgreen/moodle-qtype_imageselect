@@ -137,22 +137,22 @@ class qtype_imageselect extends question_type {
     }
 
     // populates fields such as combined feedback
-    public function get_question_options($formdata) {
+    public function get_question_options($question) {
         global $DB;
-        $formdata->options = $DB->get_record(
+        $question->options = $DB->get_record(
             'question_imageselect',
-            ['questionid' => $formdata->id],
+            ['questionid' => $question->id],
             '*',
             MUST_EXIST
         );
-        $formdata->options->images = $DB->get_records(
+        $question->options->images = $DB->get_records(
             'question_imageselect_images',
-            ['questionid' => $formdata->id],
+            ['questionid' => $question->id],
             'no ASC',
             '*'
         );
-        parent::get_question_options($formdata);
-        //foreach (array_keys($formdata->images) as $imageno) {
+       // parent::get_question_options($question);
+       // foreach (array_keys($question->images) as $imageno) {
         // if ($formdata->images[$dragno]['dragitemtype'] == 'image') {
         //     self::constrain_image_size_in_draft_area($draftitemid,
         //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXWIDTH,
@@ -167,11 +167,12 @@ class qtype_imageselect extends question_type {
         //                                                 'dragimage', $drag->id);
         // }
 
-        // }
+       // }
     }
 
     public function initialise_question_answers(question_definition $question, $questiondata, $forceplaintextanswers = true) {
         //TODO
+        echo(1);
     }
 
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
@@ -221,5 +222,6 @@ class qtype_imageselect extends question_type {
         parent::initialise_question_instance($question, $questiondata);
         $this->initialise_question_answers($question, $questiondata);
         $this->initialise_combined_feedback($question, $questiondata);
+        $question->images = $questiondata->options->images;
     }
 }
