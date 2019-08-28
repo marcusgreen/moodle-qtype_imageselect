@@ -70,7 +70,7 @@ class qtype_imageselect_renderer extends qtype_ddtoimage_renderer_base {
 
     
        
-      //  $output .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+        $output .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
 
         /* Some code to restore the state of the question as you move back and forth
         from one question to another in a quiz and some code to disable the input fields

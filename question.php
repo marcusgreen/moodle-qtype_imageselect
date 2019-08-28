@@ -132,15 +132,28 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
 
     public function check_file_access($qa, $options, $component, $filearea,
             $args, $forcedownload) {
-        // TODO.
-        if ($component == 'question' && $filearea == 'hint') {
-            return $this->check_hint_file_access($qa, $options, $args);
-
-        } else {
-            return parent::check_file_access($qa, $options, $component, $filearea,
-                    $args, $forcedownload);
+		if ('question' == $component && 'hint' == $filearea) {
+			return $this->check_hint_file_access($qa, $options, $args);
+		}else if ($filearea == 'selectableimage') {
+			$validfilearea = true;
+         } else {
+            $validfilearea = false;
         }
+        if ($component == 'qtype_imageselect' && $validfilearea) {
+
+			return true;
+            // else if ($filearea == 'dragimage') {
+            //     foreach ($question->choices as $group) {
+            //         foreach ($group as $drag) {
+            //             if ($drag->id == $itemid) {
+            //                 return true;
+            //             }
+            //         }
+            //     }
+            //     return false;
     }
+}
+///lib/editor/atto/yui/build/moodle-editor_atto-editor/moodle-editor_atto-editor.j
     /**
      * @param array $response responses, as returned by
      *      {@link question_attempt_step::get_qt_data()}.
