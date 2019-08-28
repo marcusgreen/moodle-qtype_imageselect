@@ -35,24 +35,42 @@ defined('MOODLE_INTERNAL') || die();
 *
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_imageselect_renderer extends qtype_renderer {
+
+require_once($CFG->dirroot . '/question/type/rendererbase.php');
+require_once($CFG->dirroot . '/question/type/ddimageortext/rendererbase.php');
+
+
+/**
+ * Generates the output for drag-and-drop markers questions.
+ *
+ * @copyright  2010 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class qtype_imageselect_renderer extends qtype_ddtoimage_renderer_base {
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
 
                 global $PAGE;
 
+		$output = '';
         $question = $qa->get_question();
         $response = $qa->get_last_qt_data();
 
         $questiontext = $question->format_questiontext($qa);
         $i=0;
+        $context=context_system::instance();
+        $fs = get_file_storage();
+      //  $filerecord = $fs->get_area_files($context->id,'qtype_imageselect','selectableimage',0, false, null, false);
+        $context=context_system::instance();
+		$fileurl = '';
         foreach ($question->images as $image ) {
-            $i++;
+            $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
+			$output .= '<img src=' . $fileurl . '>';
         }
 
     
        
-        $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+      //  $output .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
 
         /* Some code to restore the state of the question as you move back and forth
         from one question to another in a quiz and some code to disable the input fields
@@ -63,7 +81,7 @@ class qtype_imageselect_renderer extends qtype_renderer {
                     $question->get_validation_error(array('answer' => $currentanswer)),
                     array('class' => 'validationerror'));
         }*/
-        return $result;
+        return $output;
     }
 
     public function specific_feedback(question_attempt $qa) {

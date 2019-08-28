@@ -172,7 +172,7 @@ class qtype_imageselect extends question_type {
 
     public function initialise_question_answers(question_definition $question, $questiondata, $forceplaintextanswers = true) {
         //TODO
-        echo(1);
+      
     }
 
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
