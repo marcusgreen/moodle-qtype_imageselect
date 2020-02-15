@@ -130,6 +130,16 @@ class qtype_imageselect_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         //Add fields specific to this question type
         //remove any that come with the parent class you don't want
+        global $PAGE;
+
+       // $mform->addElement('html','<img  id="mgpic" src=https://www.examulator.com/marcus/marcus_pastel.jpg>' );
+        $html ='<div style="width:300px; height:300px">
+            <img id="mgpic" src=http://localhost/mdl37/question/type/imageselect/marcus_pastel.jpg>
+            </div>';
+
+        $mform->addElement('html',$html);
+        $PAGE->requires->js_call_amd('qtype_imageselect/editimage', 'init',['mgpic']);
+
         $mform->removeelement('questiontext');
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
         $this->editoroptions);
