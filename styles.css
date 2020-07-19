@@ -27,6 +27,7 @@ cropimg {
   .cropper-container img {
     display: block;
     height: 100%;
+    border: solid thin black 2px;
     image-orientation: 0deg;
     max-height: none !important;
     max-width: none !important;
