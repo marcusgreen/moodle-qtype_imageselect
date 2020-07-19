@@ -134,19 +134,23 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
        // $mform->addElement('html','<img  id="mgpic" src=https://www.examulator.com/marcus/marcus_pastel.jpg>' );
         $html ='<div style="width:300px; height:300px">
-            <img id="mgpic" src='.$CFG->wwwroot.'/question/type/imageselect/moodle_logo.png>
-            </div>
-            <div class="btn-group">
-            <button type="button" class="btn" data-method="rotate" data-option="-5" data-toggle="tooltip" title="Ruota antiorario">
-              <span class="fa fa-rotate-left"></span>
-            </button>
-            <button type="button" class="btn" data-method="rotate" data-option="5" data-toggle="tooltip" title="Ruota orario">
-              <span class="fa fa-rotate-right"></span>
-            </button>
-          </div>';
-        //$html = "<h1>hello</h1><img id=mgpic".$CFG->dirroot;
+              <img id="src-img" src='.$CFG->wwwroot.'/question/type/imageselect/moodle_logo.png>
+              </div>
+
+            <div id="actions">
+
+              <div class="docs-buttons">
+                  <div class="btn-group">
+                      <button type="button" class="btn fa fa-rotate-left" data-method="rotate" data-option="-5" data-toggle="tooltip" title="Ruota antiorario">
+                      </button>
+                      <button type="button" class="btn fa fa-rotate-right" data-method="rotate" data-option="5" data-toggle="tooltip" title="Ruota orario">
+                      </button>
+                  </div>
+              </div>
+            </div>';
+
         $mform->addElement('html',$html);
-        $PAGE->requires->js_call_amd('qtype_imageselect/editimage', 'init',['mgpic']);
+        $PAGE->requires->js_call_amd('qtype_imageselect/editimage', 'init',['srcimg']);
 
         $mform->removeelement('questiontext');
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
