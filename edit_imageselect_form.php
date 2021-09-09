@@ -156,7 +156,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
         $this->editoroptions);
         $mform->setType('questiontext', PARAM_RAW);
-        $mform->addHelpButton('questiontext', 'questiontext', 'qtype_gapfill');
+        $mform->addHelpButton('questiontext', 'questiontext', 'qtype_imageselect');
         //based on qtype_ddtoimage_edit_form_base
         list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
         $this->definition_selectable_images($mform, $itemrepeatsatstart);

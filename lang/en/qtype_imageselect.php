@@ -35,11 +35,12 @@ sub questions in the question text.
 So the student can enter a numeric or short text answer or choose an answer or answer(s) from
  using a select box, check boxes or radio boxes.';
 
- $string['imagelabel']= 'Image label';
+ $string['imagelabel'] = 'Image label';
  $string['selectableitemheader'] = 'Selectable item {$a}';
  $string['iscorrect'] = 'Is correct response';
 
  $string['addmoreimages'] = 'Blanks for {no} more selectable images';
-
+ $string['questiontext'] = 'Question text';
+ $string['questiontext_help'] = 'Help for the questiontext field';
 
 
