@@ -20,7 +20,7 @@
  */
 
 import Ajax from 'core/ajax';
-import Croppie from 'local_editimage/croppie';
+import Croppie from 'qtype_imageselect/croppie';
 import {get_string as getString} from 'core/str';
 import Templates from 'core/templates';
 import Notification from 'core/notification';
@@ -129,6 +129,7 @@ const showEditActions = target => {
     const cropimage = target.querySelector(selectors.actions.cropimage);
     const confirmactions = target.querySelector(selectors.regions.confirmactions);
     const editactions = target.querySelector(selectors.regions.editactions);
+
     if (currentimage) {
         cropimage.classList.remove(selectors.classes.hidden);
         showDeleteOption(target, true);
@@ -136,8 +137,12 @@ const showEditActions = target => {
         cropimage.classList.add(selectors.classes.hidden);
         showDeleteOption(target, false);
     }
+
     confirmactions.classList.add(selectors.classes.hidden);
     editactions.classList.remove(selectors.classes.hidden);
+
+    //var uploadimage = document.getElementsByName("uploadimage").style.display = "none";
+
     removeImageAlert(target);
 };
 
@@ -148,7 +153,7 @@ const showEditActions = target => {
  */
 const updateImage = args => {
     const request = {
-        methodname: 'local_editimge_imageeditable_update_image',
+        methodname: 'qtype_imageselect_imageeditable_update_image',
         args: args
     };
 
@@ -249,7 +254,7 @@ const imageCropper = target => {
         target.querySelector('.cr-viewport').classList.add('cr-vp-circle');
     }
 
-    confirmAction(target, getString('cropimage', 'local_editimage'), () => {
+    confirmAction(target, getString('cropimage', 'qtype_imageselect'), () => {
         croppedImage.result('base64').then(imageData => {
 
             let ajaxParams = {
@@ -331,7 +336,7 @@ const imageUploader = (target, siteMaxBytes, event) => {
         img.setAttribute('src', filedata);
         img.addEventListener('load', () => {
             if (img.naturalWidth < 512) {
-                getString('resolutionlow', 'local_editimage').done(message => {
+                getString('resolutionlow', 'qtype_imageselect').done(message => {
                     showImageAlert(imageHandler, message);
                 });
             }
@@ -458,6 +463,5 @@ export const init = (target, siteMaxBytes) => {
     });
 
     showEditActions(target);
-    debugger;
     imagecontrols.classList.add('js-enabled');
 };
