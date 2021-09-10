@@ -174,7 +174,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
             'component' => 'core_course',
             'filearea' => 'overviewfiles',
             'currentimage' => '',
-            'contextid' => ''
+            'contextid' => '',
+            'size' => 1000
          ];
 
         //  $singleimageoptions['currentimage'] = \core_course\external\course_summary_exporter::get_course_image($course);
