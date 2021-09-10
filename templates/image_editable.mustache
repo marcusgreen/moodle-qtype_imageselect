@@ -67,13 +67,10 @@
             <div data-region="editactions" class="w-100">
                 <div class="d-flex">
                     <label data-region="uploadinputlabel" id="uploadbutton" tabindex="0" class="btn btn-sm btn-secondary icon-no-margin mb-0" for="imagehandler-coverfiles-{{uniqid}}">
-                        <span>
-                            <i class="icon fa fa-upload fa-fw " title="{{# str }} uploadimage, local_editimage {{/ str }}" aria-label="{{# str }} uploadimage, local_editimage {{/ str }}"></i>
-                        </span>
-                       <input data-action="uploadimage" tabindex="-1" id="imagehandler-coverfiles-{{uniqid}}" name="uploadimage" type="file"  class="sr-only input-coverfiles" accept="image/jpeg,image/gif,image/png"/>
+                       <input data-action="uploadimage" tabindex="-1" id="imagehandler-coverfiles-{{uniqid}}" name="uploadimage" type="file"  class="sr-only " accept="image/jpeg,image/gif,image/png"/>
                     </label>
                     <button data-action="cropimage" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
-                        <i class="icon fa fa-crop fa-fw " title="{{#str}}cropimage, local_editimage {{/str}}" aria-label="{{# str }}crop, local_editimage {{/ str }}"></i>
+                        <i class="icon fa fa-crop fa-fw " title="{{#str}}cropimage, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>
                     </button>
                 </div>
             </div>
@@ -88,7 +85,7 @@
     </div>
     <div class="d-flex" style="max-width: {{size}}px;">
         <a href="#" class="deleteimage" data-action="deleteimage" tabindex="-1">
-            {{#str}}deleteimage, local_editimage{{/str}}
+            {{#str}}deleteimage, qtype_imageselect{{/str}}
         </a>
         <div data-region="spinner" class="ml-auto d-none">
             {{#pix}}i/progressbar, core, {{#str}}saving, repository{{/str}}{{/pix}}
@@ -100,10 +97,10 @@
 </div>
         </fieldset>
     {{/element}}
-{{/ core_form/element-template }}
+{{/core_form/element-template }}
 
 {{#js}}
-require(['local_editimage/image_editable'], function(imageEditable) {
+require(['qtype_imageselect/image_editable'], function(imageEditable) {
     var target = document.getElementById("imagehandler-wrapper-{{uniqid}}");
     if (target) {
         imageEditable.init(target, {{maxbytes}});
