@@ -88,7 +88,7 @@ class MoodleQuickForm_singleimage extends MoodleQuickForm_filepicker {
             'draftitemid' => $draftitemid,
             'formelements' => ['name' => $elname, 'id' => $id, 'value' => $draftitemid]
         ];
-        $editable = new \local_editimage\output\image_editable($data);
+        $editable = new qtype_imageselect\output\image_editable($data);
         return $OUTPUT->render($editable);
     }
 

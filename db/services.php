@@ -17,7 +17,7 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     local_editimage
+ * @package     qtype_imageselect
  * @copyright   2019 Your Name <you@example.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
           'requiredcapability' => '',
           'restrictedusers' => 0,                                                                               // into the administration
           'enabled' => 1,
-          'shortname' => '',
+          'shortname' => 'update_image',
           'downloadfiles' => 0,
           'uploadfiles'  => 0
       ],
