@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
+MoodleQuickForm::registerElementType('singleimage', __DIR__."/singleimage.php", 'MoodleQuickForm_singleimage');
 
 /**
  * imageselect question editing form definition.
@@ -38,7 +39,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
     /**
      * The default starting number of drop zones.
      */
-    const START_NUM_ITEMS = 4;
+    const START_NUM_ITEMS = 2;
 
     public function data_preprocessing($question) {
         $imageids = []; // Drag no -> dragid.
@@ -49,9 +50,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
             foreach ($question->options->images as $image) {
                 $imageindex = $image->no - 1;
                 $question->images[$imageindex] = [];
-                // $question->draglabel[$dragindex] = $drag->label;
-                // $question->drags[$dragindex]['infinite'] = $drag->infinite;
-                // $question->drags[$dragindex]['draggroup'] = $drag->draggroup;
                 $imageids[$imageindex] = $image->id;
             }
             // Initialise file picker for images.
@@ -128,36 +126,11 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     protected function definition_inner($mform) {
-        //Add fields specific to this question type
-        //remove any that come with the parent class you don't want
-        global $PAGE,$CFG;
-
-       // $mform->addElement('html','<img  id="mgpic" src=https://www.examulator.com/marcus/marcus_pastel.jpg>' );
-        $html ='<div style="width:300px; height:300px">
-              <img id="src-img" src='.$CFG->wwwroot.'/question/type/imageselect/moodle_logo.png>
-              </div>
-
-            <div id="actions">
-
-              <div class="docs-buttons">
-                  <div class="btn-group">
-                      <button type="button" class="btn fa fa-rotate-left" data-method="rotate" data-option="-5" data-toggle="tooltip" title="Ruota antiorario">
-                      </button>
-                      <button type="button" class="btn fa fa-rotate-right" data-method="rotate" data-option="5" data-toggle="tooltip" title="Ruota orario">
-                      </button>
-                  </div>
-              </div>
-            </div>';
-
-        $mform->addElement('html',$html);
-        $PAGE->requires->js_call_amd('qtype_imageselect/editimage', 'init',['srcimg']);
-
         $mform->removeelement('questiontext');
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
         $this->editoroptions);
         $mform->setType('questiontext', PARAM_RAW);
         $mform->addHelpButton('questiontext', 'questiontext', 'qtype_imageselect');
-        //based on qtype_ddtoimage_edit_form_base
         list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
         $this->definition_selectable_images($mform, $itemrepeatsatstart);
 
@@ -188,25 +161,29 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     protected function selectable_image($mform) {
-        //see draggable_item l 138
-     https://github.com/moodle/moodle/blob/8d9614b3416634d3ca9168ea86a624e75729e34d/question/type/ddimageortext/edit_ddimageortext_form.php#L138
-     $selectableimageitem = [];
+        $selectableimageitem = [];
         $grouparray = [];
 
         $grouparray[] = $mform->createElement('advcheckbox', 'iscorrect', ' ',
         get_string('iscorrect', 'qtype_imageselect'));
         $selectableimageitem[] = $mform->createElement('group', 'images',
          get_string('selectableitemheader', 'qtype_imageselect', '{no}'), $grouparray);
-        //  if (isset($company['scs_company_logo'])) {
-        //     $image = '<img src="'.$company['scs_company_logo'].'" height="128" width="128"></img>';
-        //     $mform->addElement('static', 'imageitem', 'Company Logo', $image);
-        // }
 
-        // $selectableimageitem[] = $mform->createElement('filepicker', 'imageitem', '', null,
-        //                            self::file_picker_options());
-          $selectableimageitem[] =$mform->createElement('filemanager', 'imageitem', get_string('files'), null, array('subdirs'=>0, 'accepted_types'=>'*'));
+         $singleimageoptions = [
+            'maxbytes' => 100,
+            'component' => 'core_course',
+            'filearea' => 'overviewfiles',
+            'currentimage' => '',
+            'contextid' => ''
+         ];
 
-        $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
+        //  $singleimageoptions['currentimage'] = \core_course\external\course_summary_exporter::get_course_image($course);
+        //  $singleimageoptions['defaultimage'] = $OUTPUT->get_generated_image_for_id($course->id);
+        //  $singleimageoptions['contextid'] = $coursecontext->id;
+
+         $selectableimageitem[] = $mform->createElement('singleimage', 'sampleimage', "Sample Image", null, $singleimageoptions);
+
+         $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
                                                 get_string('imagelabel', 'qtype_imageselect'),
                                                 ['size' => 30, 'class' => 'tweakcss draglabel']);
         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
@@ -220,11 +197,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
      */
     protected function get_image_item_repeats() {
         $countimages = 0;
-        if (isset($this->question->id)) {
-            // foreach ($this->question->options->drags as $drag) {
-            //     $countimages = max($countimages, $drag->no);
-            // }
-        }
+
         if (!$countimages) {
             $countimages = self::START_NUM_ITEMS;
         }
