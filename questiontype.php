@@ -53,13 +53,15 @@ class qtype_imageselect extends question_type {
      *
      * @return object
      */
-    public function save_question($question, $form) {
-        return parent::save_question($question, $form);
-    }
+    // public function save_question($question, $form) {
+    //     return parent::save_question($question, $form);
+    // }
 
     public function save_question_options($formdata) {
         //TODO
         // save question specific data (to extra question fields)
+       // \core_user\imageeditable\handler::process_formdata($usernew->userimage, $singleimageoptions);
+
         global $DB;
         $context = $formdata->context;
         $options = $DB->get_record('question_imageselect', ['questionid' => $formdata->id]);
@@ -109,8 +111,8 @@ class qtype_imageselect extends question_type {
                 list($sql, $params) = $DB->get_in_or_equal(array_values($oldimageids));
                 $DB->delete_records_select('question_imageselect_images', "id {$sql}", $params);
             }
-        
-        
+
+
     }
 
     /**
@@ -151,28 +153,11 @@ class qtype_imageselect extends question_type {
             'no ASC',
             '*'
         );
-       // parent::get_question_options($question);
-       // foreach (array_keys($question->images) as $imageno) {
-        // if ($formdata->images[$dragno]['dragitemtype'] == 'image') {
-        //     self::constrain_image_size_in_draft_area($draftitemid,
-        //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXWIDTH,
-        //                         QTYPE_DDIMAGEORTEXT_DRAGIMAGE_MAXHEIGHT);
-        //     file_save_draft_area_files($draftitemid, $formdata->context->id,
-        //                         'qtype_ddimageortext', 'dragimage', $drag->id,
-        //                         array('subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1));
-        // } else {
-        //     // Delete any existing files for draggable text item type.
-        //     $fs = get_file_storage();
-        //     $fs->delete_area_files($formdata->context->id, 'qtype_ddimageortext',
-        //                                                 'dragimage', $drag->id);
-        // }
-
-       // }
     }
 
     public function initialise_question_answers(question_definition $question, $questiondata, $forceplaintextanswers = true) {
         //TODO
-      
+
     }
 
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {

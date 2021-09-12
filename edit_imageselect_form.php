@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,7 +26,7 @@ MoodleQuickForm::registerElementType('singleimage', __DIR__."/singleimage.php", 
 /**
  * imageselect question editing form definition.
  *
- * @copyright  Marcus Green 2019
+ * @copyright  Marcus Green 2021
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_imageselect_edit_form extends question_edit_form {
@@ -79,6 +78,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
         return $question;
     }
+
 
     /**
      * Checks to see if a file has been uploaded.
@@ -171,8 +171,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
          $singleimageoptions = [
             'maxbytes' => 100,
-            'component' => 'core_course',
-            'filearea' => 'overviewfiles',
+            'component' => 'qtype_imageselect',
+            'filearea' => 'images',
             'currentimage' => '',
             'contextid' => '',
             'size' => 1000
