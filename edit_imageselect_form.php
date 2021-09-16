@@ -182,7 +182,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         //  $singleimageoptions['defaultimage'] = $OUTPUT->get_generated_image_for_id($course->id);
         //  $singleimageoptions['contextid'] = $coursecontext->id;
 
-         $selectableimageitem[] = $mform->createElement('singleimage', 'sampleimage', "Sample Image", null, $singleimageoptions);
+         $selectableimageitem[] = $mform->createElement('singleimage', 'imageitem', "Sample Image", null, $singleimageoptions);
 
          $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
                                                 get_string('imagelabel', 'qtype_imageselect'),
