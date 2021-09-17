@@ -60,6 +60,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
                 $itemid = $imageids[$imageindex] ?? null;
                 file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_imageselect',
                                         'selectableimage', $itemid, self::file_picker_options());
+
                 $question->imageitem[$imageindex] = $draftitemid;
             }
             foreach ($question->options->images as $image) {
@@ -72,7 +73,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
                     $fileexists = self::file_uploaded($question->imageitem[$imageindex]);
                 }
                 $question->imagelabel[$imageindex] = $image->label;
-                $imageids[$imageindex] = $image->id;
+                $question->imageitem[$imageindex] = $image->id;
+
             }
         }
 
@@ -172,9 +174,9 @@ class qtype_imageselect_edit_form extends question_edit_form {
          $singleimageoptions = [
             'maxbytes' => 100,
             'component' => 'qtype_imageselect',
-            'filearea' => 'images',
+            'filearea' => 'selectableimage',
             'currentimage' => '',
-            'contextid' => '',
+            'contextid' => 25,
             'size' => 1000
          ];
 

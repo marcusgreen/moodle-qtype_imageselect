@@ -100,7 +100,7 @@ class qtype_imageselect extends question_type {
                     file_save_draft_area_files(
                         $draftitemid,
                         $formdata->context->id,
-                        'qtype_imageselect',
+                        'question',
                         'selectableimage',
                         $image->id,
                         ['subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1]

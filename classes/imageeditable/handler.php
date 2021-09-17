@@ -95,7 +95,7 @@ class handler {
      * @param array $singleimageoptions The configuration for the singleimage form field.
      */
     public static function process_formdata(int $draftitemid, array $singleimageoptions): void {
-        global $USER, $CFG;
+        global $USER;
 
         $contextid = $singleimageoptions['contextid'];
         $filearea = $singleimageoptions['filearea'];
@@ -106,23 +106,24 @@ class handler {
             return;
         }
 
-        $context = \context::instance_by_id($contextid);
-
         $personalcontext = \context_user::instance($USER->id);
 
         $fs = get_file_storage();
 
         foreach ($fs->get_area_files($personalcontext->id, 'user', 'draft', $draftitemid) as $draftfile) {
             if ($draftfile->is_valid_image()) {
-                $user = \core_user::get_user($context->instanceid, '*', MUST_EXIST);
-                $user->imagefile = $draftfile->get_itemid();
-                $filemanageroptions = ['maxbytes' => $CFG->maxbytes,
-                    'subdirs'        => 0,
-                    'maxfiles'       => 1,
-                    'accepted_types' => 'optimised_image'];
-                \core_user::update_picture($user, $filemanageroptions);
-                $draftfile->delete();
+                self::delete($contextid, $filearea);
+                $newimage = array(
+                    'contextid' => $contextid,
+                    'component' => 'course',
+                    'filearea' => $filearea,
+                    'itemid' => 0,
+                    'filepath' => '/',
+                    'filename' => $draftfile->get_filename()
+                );
+                $fs->create_file_from_storedfile($newimage, $draftfile);
             }
+            $draftfile->delete();
         }
     }
 

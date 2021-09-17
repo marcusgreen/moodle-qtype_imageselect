@@ -33,6 +33,8 @@ use renderable;
  * @copyright  2021 Bas Brands
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+
 class image_editable implements templatable, renderable {
 
     /**
@@ -110,8 +112,20 @@ class image_editable implements templatable, renderable {
             $this->contextid = (\context_user::instance($USER->id))->id;
         }
 
-        return [
-            'currentimage' => $this->currentimage,
+        global $USER;
+        $context = \context_user::instance($USER->id);
+        $itemid   = $this->draftitemid;
+        $filename = null;
+
+        $fs = get_file_storage();
+        foreach ($fs->get_area_files($context->id, 'user', 'draft', $itemid) as $draftfile) {
+            if ($draftfile->is_valid_image()) {
+                $filename = $draftfile->get_filename();
+            }
+        }
+        $ci = "http://localhost/wsel/draftfile.php/5/user/draft/".$this->draftitemid."/".$filename;
+        $data = [
+            'currentimage' => $ci,
             'defaultimage' => $this->defaultimage,
             'component' => $this->component,
             'filearea' => $this->filearea,
@@ -122,6 +136,7 @@ class image_editable implements templatable, renderable {
             'draftitemid' => $this->draftitemid,
             'formelements' => $this->formelements
         ];
+        return $data;
     }
 
     /**
