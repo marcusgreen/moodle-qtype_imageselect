@@ -114,18 +114,21 @@ class image_editable implements templatable, renderable {
 
         global $USER;
         $context = \context_user::instance($USER->id);
-        $itemid   = $this->draftitemid;
-        $filename = null;
 
         $fs = get_file_storage();
-        foreach ($fs->get_area_files($context->id, 'user', 'draft', $itemid) as $draftfile) {
+        foreach ($fs->get_area_files($context->id, 'user', 'draft', $this->draftitemid) as $draftfile) {
             if ($draftfile->is_valid_image()) {
                 $filename = $draftfile->get_filename();
             }
         }
-        $ci = "http://localhost/wsel/draftfile.php/5/user/draft/".$this->draftitemid."/".$filename;
+
+        $url = \moodle_url::make_draftfile_url(
+            $this->draftitemid,
+            '/',
+            $filename ?? ''
+        );
         $data = [
-            'currentimage' => $ci,
+            'currentimage' => $url->out(),
             'defaultimage' => $this->defaultimage,
             'component' => $this->component,
             'filearea' => $this->filearea,

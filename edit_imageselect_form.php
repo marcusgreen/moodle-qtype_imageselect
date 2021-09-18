@@ -51,7 +51,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
                 $question->images[$imageindex] = [];
                 $imageids[$imageindex] = $image->id;
             }
-            // Initialise file picker for images.
+            // Initialise singleimage element for images.
             list(, $imagerepeats) = $this->get_image_item_repeats();
             $draftitemids = optional_param_array('imageitem', [], PARAM_INT);
             for ($imageindex = 0; $imageindex < $imagerepeats; ++$imageindex) {
@@ -180,10 +180,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
             'size' => 1000
          ];
 
-        //  $singleimageoptions['currentimage'] = \core_course\external\course_summary_exporter::get_course_image($course);
-        //  $singleimageoptions['defaultimage'] = $OUTPUT->get_generated_image_for_id($course->id);
-        //  $singleimageoptions['contextid'] = $coursecontext->id;
-
          $selectableimageitem[] = $mform->createElement('singleimage', 'imageitem', "Sample Image", null, $singleimageoptions);
 
          $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
@@ -212,5 +208,25 @@ class qtype_imageselect_edit_form extends question_edit_form {
         }
 
         return [$itemrepeatsatstart, $imagerepeats];
+    }
+    protected function get_drag_item_repeats() {
+        $countimages = 0;
+        if (isset($this->question->id)) {
+            foreach ($this->question->options->drags as $drag) {
+                $countimages = max($countimages, $drag->no);
+            }
+        }
+
+        if (!$countimages) {
+            $countimages = self::START_NUM_ITEMS;
+        }
+        $itemrepeatsatstart = $countimages;
+
+        $imagerepeats = optional_param('noitems', $itemrepeatsatstart, PARAM_INT);
+        $addfields = optional_param('additems', false, PARAM_BOOL);
+        if ($addfields) {
+            $imagerepeats += self::ADD_NUM_ITEMS;
+        }
+        return array($itemrepeatsatstart, $imagerepeats);
     }
 }
