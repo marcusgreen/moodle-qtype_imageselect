@@ -80,7 +80,7 @@ class MoodleQuickForm_singleimage extends MoodleQuickForm_filepicker {
         $data = (object) [
             'currentimage' => $this->_options['currentimage'],
             'defaultimage' => $this->_options['defaultimage'],
-            'size' => 200,
+            'size' => 300,
             'rounded' => $this->_options['rounded'],
             'component' => $this->_options['component'],
             'contextid' => $this->_options['contextid'],

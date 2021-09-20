@@ -63,7 +63,6 @@ class qtype_imageselect extends question_type {
         // \core_user\imageeditable\handler::process_formdata($usernew->userimage, $singleimageoptions);
 
         global $DB;
-        $context = $formdata->context;
         $options = $DB->get_record('question_imageselect', ['questionid' => $formdata->id]);
         if (!$options) {
             $options = new stdClass();

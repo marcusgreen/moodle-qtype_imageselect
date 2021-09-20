@@ -56,8 +56,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
             $draftitemids = optional_param_array('imageitem', [], PARAM_INT);
             for ($imageindex = 0; $imageindex < $imagerepeats; ++$imageindex) {
                 $draftitemid = $draftitemids[$imageindex] ?? 0;
-                // Numbers not allowed in filearea name.
                 $itemid = $imageids[$imageindex] ?? null;
+
                 file_prepare_draft_area($draftitemid, $this->context->id, 'qtype_imageselect',
                                         'selectableimage', $itemid, self::file_picker_options());
 
@@ -73,7 +73,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
                     $fileexists = self::file_uploaded($question->imageitem[$imageindex]);
                 }
                 $question->imagelabel[$imageindex] = $image->label;
-                $question->imageitem[$imageindex] = $image->id;
+                // MAVG
+                // $question->imageitem[$imageindex] = $image->id;
 
             }
         }
@@ -197,10 +198,16 @@ class qtype_imageselect_edit_form extends question_edit_form {
     protected function get_image_item_repeats() {
         $countimages = 0;
 
+        if (isset($this->question->id)) {
+            foreach ($this->question->options->images as $image) {
+                $countimages = max($countimages, $image->no);
+            }
+        }
         if (!$countimages) {
             $countimages = self::START_NUM_ITEMS;
         }
         $itemrepeatsatstart = $countimages;
+
         $imagerepeats = optional_param('noitems', $itemrepeatsatstart, PARAM_INT);
         $addfields = optional_param('additems', false, PARAM_BOOL);
         if ($addfields) {
@@ -209,24 +216,5 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
         return [$itemrepeatsatstart, $imagerepeats];
     }
-    protected function get_drag_item_repeats() {
-        $countimages = 0;
-        if (isset($this->question->id)) {
-            foreach ($this->question->options->drags as $drag) {
-                $countimages = max($countimages, $drag->no);
-            }
-        }
 
-        if (!$countimages) {
-            $countimages = self::START_NUM_ITEMS;
-        }
-        $itemrepeatsatstart = $countimages;
-
-        $imagerepeats = optional_param('noitems', $itemrepeatsatstart, PARAM_INT);
-        $addfields = optional_param('additems', false, PARAM_BOOL);
-        if ($addfields) {
-            $imagerepeats += self::ADD_NUM_ITEMS;
-        }
-        return array($itemrepeatsatstart, $imagerepeats);
-    }
 }
