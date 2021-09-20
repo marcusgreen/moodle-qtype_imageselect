@@ -1,5 +1,6 @@
-
-
+.fa-rotate-90:before {
+  content: "";
+}
 
 .imagehandler_wrapper .imagehandler {
   position: relative;
@@ -9,7 +10,7 @@
   border-color: black;
   border-style: solid 2px;
   background-size: contain !important;
-background-repeat: no-repeat !important;
+  background-repeat: no-repeat !important;
 }
 
 .imagehandler.round {

@@ -69,6 +69,12 @@
                     <label data-region="uploadinputlabel" id="uploadbutton" tabindex="0" class="btn btn-sm btn-secondary icon-no-margin mb-0" for="imagehandler-coverfiles-{{uniqid}}">
                        <input data-action="uploadimage" tabindex="-1" id="imagehandler-coverfiles-{{uniqid}}" name="uploadimage" type="file"  class="sr-only " accept="image/jpeg,image/gif,image/png"/>
                     </label>
+                    <button data-action="rotateleft" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
+                        <i class="icon fa fa-rotate-left" title="{{#str}}rotateimageleft, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>
+                    </button>
+                    <button data-action="rotateright" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
+                        <i class="icon fa fa-rotate-right" title="{{#str}}rotateimageright, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>
+                    </button>
                     <button data-action="cropimage" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
                         <i class="icon fa fa-crop fa-fw " title="{{#str}}cropimage, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>
                     </button>
