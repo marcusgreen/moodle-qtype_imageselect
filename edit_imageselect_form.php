@@ -180,7 +180,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
             'size' => 1000
          ];
 
-         $selectableimageitem[] = $mform->createElement('singleimage', 'imageitem', "Sample Image", null, $singleimageoptions);
+         $selectableimageitem[] = $mform->createElement('singleimage', 'imageitem', "", null, $singleimageoptions);
 
          $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
                                                 get_string('imagelabel', 'qtype_imageselect'),

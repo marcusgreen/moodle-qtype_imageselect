@@ -19,7 +19,7 @@
  *
  * @package    qtype
  * @subpackage imageselect
- * @copyright  Marcus Green 2019
+ * @copyright  Marcus Green 2021
 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -52,24 +52,16 @@ class qtype_imageselect_renderer extends qtype_ddtoimage_renderer_base {
 
                 global $PAGE;
 
-		$output = '';
+        $output = '';
         $question = $qa->get_question();
-        $response = $qa->get_last_qt_data();
 
         $questiontext = $question->format_questiontext($qa);
-        $i=0;
-        $context=context_system::instance();
-        $fs = get_file_storage();
-      //  $filerecord = $fs->get_area_files($context->id,'qtype_imageselect','selectableimage',0, false, null, false);
-        $context=context_system::instance();
-		$fileurl = '';
-        foreach ($question->images as $image ) {
+        $fileurl = '';
+        foreach ($question->images as $image) {
             $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
-			$output .= '<img src=' . $fileurl . '>';
+            $output .= '<img src=' . $fileurl . ' width="50" height="60">';
         }
 
-    
-       
         $output .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
 
         /* Some code to restore the state of the question as you move back and forth
@@ -92,5 +84,37 @@ class qtype_imageselect_renderer extends qtype_ddtoimage_renderer_base {
     public function correct_response(question_attempt $qa) {
         // TODO.
         return '';
+    }
+    /**
+     * Returns the URL for an image
+     *
+     * @param object $qa Question attempt object
+     * @param string $filearea File area descriptor
+     * @param int $itemid Item id to get
+     * @return string Output url, or null if not found
+     */
+    protected static function get_url_for_image(question_attempt $qa, $filearea, $itemid = 0) {
+        $question = $qa->get_question();
+        $qubaid = $qa->get_usage_id();
+        $slot = $qa->get_slot();
+        $fs = get_file_storage();
+        if ($filearea == 'bgimage') {
+            $itemid = $question->id;
+        }
+        $componentname = $question->qtype->plugin_name();
+        $draftfiles = $fs->get_area_files($question->contextid, $componentname,
+                                                                        $filearea, $itemid, 'id');
+        if ($draftfiles) {
+            foreach ($draftfiles as $file) {
+                if ($file->is_directory()) {
+                    continue;
+                }
+                $url = moodle_url::make_pluginfile_url($question->contextid, $componentname,
+                                            $filearea, "$qubaid/$slot/{$itemid}", '/',
+                                            $file->get_filename());
+                return $url->out();
+            }
+        }
+        return null;
     }
 }

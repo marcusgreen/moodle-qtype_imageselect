@@ -39,12 +39,12 @@ require_once($CFG->dirroot . '/question/type/imageselect/question.php');
 class qtype_imageselect extends question_type {
     // ties additional table fields to the database
     public function extra_question_fields() {
-        //   return array('question_imageselect','correctfeedback');
+        // return array('question_imageselect','correctfeedback');
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
-        //   parent::move_files($questionid, $oldcontextid, $newcontextid);
-        //    $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
+        // parent::move_files($questionid, $oldcontextid, $newcontextid);
+        // $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
 
     /**
@@ -54,13 +54,13 @@ class qtype_imageselect extends question_type {
      * @return object
      */
     // public function save_question($question, $form) {
-    //     return parent::save_question($question, $form);
+    // return parent::save_question($question, $form);
     // }
 
     public function save_question_options($formdata) {
-        //TODO
+        // TODO
         // save question specific data (to extra question fields)
-       // \core_user\imageeditable\handler::process_formdata($usernew->userimage, $singleimageoptions);
+        // \core_user\imageeditable\handler::process_formdata($usernew->userimage, $singleimageoptions);
 
         global $DB;
         $context = $formdata->context;
@@ -88,30 +88,29 @@ class qtype_imageselect extends question_type {
             $image->no = $imageno + 1;
             $image->label = $formdata->imagelabel[$imageno];
                 $info = file_get_draft_area_info($formdata->imageitem[$imageno]);
-                if ($info['filecount'] > 0 || ('' != trim($formdata->imagelabel[$imageno]))) {
-                    $draftitemid = $formdata->imageitem[$imageno];
-                    if (isset($oldimageids[$imageno + 1])) {
-                        $image->id = $oldimageids[$imageno + 1];
-                        unset($oldimageids[$imageno + 1]);
-                        $DB->update_record('question_imageselect_images', $image);
-                    } else {
-                        $image->id = $DB->insert_record('question_imageselect_images', $image);
-                    }
-                    file_save_draft_area_files(
-                        $draftitemid,
-                        $formdata->context->id,
-                        'question',
-                        'selectableimage',
-                        $image->id,
-                        ['subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1]
-                    );
+            if ($info['filecount'] > 0 || ('' != trim($formdata->imagelabel[$imageno]))) {
+                $draftitemid = $formdata->imageitem[$imageno];
+                if (isset($oldimageids[$imageno + 1])) {
+                    $image->id = $oldimageids[$imageno + 1];
+                    unset($oldimageids[$imageno + 1]);
+                    $DB->update_record('question_imageselect_images', $image);
+                } else {
+                    $image->id = $DB->insert_record('question_imageselect_images', $image);
                 }
-        }
-            if (!empty($oldimageids)) {
-                list($sql, $params) = $DB->get_in_or_equal(array_values($oldimageids));
-                $DB->delete_records_select('question_imageselect_images', "id {$sql}", $params);
+                file_save_draft_area_files(
+                    $draftitemid,
+                    $formdata->context->id,
+                    'qtype_imageselect',
+                    'selectableimage',
+                    $image->id,
+                    ['subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 1]
+                );
             }
-
+        }
+        if (!empty($oldimageids)) {
+            list($sql, $params) = $DB->get_in_or_equal(array_values($oldimageids));
+            $DB->delete_records_select('question_imageselect_images', "id {$sql}", $params);
+        }
 
     }
 
@@ -156,7 +155,7 @@ class qtype_imageselect extends question_type {
     }
 
     public function initialise_question_answers(question_definition $question, $questiondata, $forceplaintextanswers = true) {
-        //TODO
+        // TODO
 
     }
 
@@ -176,7 +175,7 @@ class qtype_imageselect extends question_type {
         $pluginmanager = core_plugin_manager::instance();
         $gapfillinfo = $pluginmanager->get_plugin_info('question_imageselect');
         $output = parent::export_to_xml($question, $format);
-        //TODO
+        // TODO
         $output .= $format->write_combined_feedback($question->options, $question->id, $question->contextid);
 
         return $output;
@@ -193,9 +192,7 @@ class qtype_imageselect extends question_type {
     }
 
     protected function delete_files($questionid, $contextid) {
-        //    parent::delete_files($questionid, $contextid);
-        //    $this->delete_files_in_hints($questionid, $contextid);
-    }
+      }
 
     /**
      * Executed at runtime (in a quiz or preview).
