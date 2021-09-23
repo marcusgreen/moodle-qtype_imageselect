@@ -49,6 +49,7 @@ $string['deleteimage'] = 'Delete image';
 $string['cropimage'] = 'Crop image';
 $string['rotateimageright'] = 'Rotate right';
 $string['rotateimageleft'] = 'Rotate left';
+$string['confirm'] = 'Confirm';
 
 $string['resolutionlow'] = 'For best quality, we recommend a larger image of at last 512px width.';
 

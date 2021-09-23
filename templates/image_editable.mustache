@@ -41,10 +41,10 @@
         {{/element.hiddenlabel}}
     {{/label}}
     {{$element}}
-        <fieldset class="w-100 m-0 p-0 border-0" id="{{element.id}}_fieldset" data-fieldtype="singleimage">
-            <legend class="sr-only">{{label}}</legend>
+        <fieldset class="w-100 m-0 p-0 border-0 " id="{{element.id}}_fieldset" data-fieldtype="singleimage">
+            <legend class="sr-only ">{{label}}</legend>
 <div id="imagehandler-wrapper-{{uniqid}}"
-     class="imagehandler_wrapper"
+     class="imagehandler_wrapper "
      data-currentimage="{{{currentimage}}}"
      data-defaultimage="{{{defaultimage}}}"
      data-component="{{component}}"
@@ -54,7 +54,7 @@
      data-rounded="{{#rounded}}rounded{{/rounded}}"
      data-draftitemid="{{draftitemid}}"
 >
-    <div {{#formelements}}id="singleimage_{{ id }}"{{/formelements}} class="imagehandler {{#rounded}}round{{/rounded}} {{classes}}"
+    <div {{#formelements}}id="singleimage_{{ id }}"{{/formelements}} class="imagehandler {{#rounded}}round{{/rounded}} {{classes}} "
         data-region="imagehandler"
         {{#currentimage}}
             style="background-image: url('{{{currentimage}}}'); {{#size}} width: {{size}}px; height: {{size}}px;{{/size}}"
@@ -65,15 +65,15 @@
         >
         <div data-region="imagecontrols" class="uploadimagecontrols p-2">
             <div data-region="editactions" class="w-100">
-                <div class="d-flex">
+                <div class="d-flex" >
                     <label data-region="uploadinputlabel" id="uploadbutton" tabindex="0" class="btn btn-sm btn-secondary icon-no-margin mb-0" for="imagehandler-coverfiles-{{uniqid}}">
                        <input data-action="uploadimage" tabindex="-1" id="imagehandler-coverfiles-{{uniqid}}" name="uploadimage" type="file"  class="sr-only " accept="image/jpeg,image/gif,image/png"/>
                     </label>
                     <button data-action="rotateleft" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
-                        <i class="icon fa fa-rotate-left" title="{{#str}}rotateimageleft, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>
+                        <i class="icon fa fa-rotate-left" title="{{#str}}rotateimageleft, qtype_imageselect {{/str}}" aria-label="{{# str }}rotateimageleft, qtype_imageselect {{/ str }}"></i>
                     </button>
                     <button data-action="rotateright" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
-                        <i class="icon fa fa-rotate-right" title="{{#str}}rotateimageright, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>
+                        <i class="icon fa fa-rotate-right" title="{{#str}}rotateimageright, qtype_imageselect {{/str}}" aria-label="{{# str }}rotateimageright, qtype_imageselect {{/ str }}"></i>
                     </button>
                     <button data-action="cropimage" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
                         <i class="icon fa fa-crop fa-fw " title="{{#str}}cropimage, qtype_imageselect {{/str}}" aria-label="{{# str }}crop, qtype_imageselect {{/ str }}"></i>

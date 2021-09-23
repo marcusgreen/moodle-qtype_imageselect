@@ -30,6 +30,8 @@ const selectors = {
         confirm: '[data-action="confirm"]',
         cancel: '[data-action="cancel"]',
         cropimage: '[data-action="cropimage"]',
+        rotateleft: '[data-action="rotateleft"]',
+        rotateright: '[data-action="rotateright"]',
         uploadimage: '[data-action="uploadimage"]',
         deleteimage: '[data-action="deleteimage"]'
     },
@@ -141,7 +143,6 @@ const showEditActions = target => {
     confirmactions.classList.add(selectors.classes.hidden);
     editactions.classList.remove(selectors.classes.hidden);
 
-    //var uploadimage = document.getElementsByName("uploadimage").style.display = "none";
 
     removeImageAlert(target);
 };
@@ -291,7 +292,80 @@ const imageCropper = target => {
         showEditActions(target);
     });
 };
+const imageRotator = (target, orientation) => {
+    const imageHandler = target.querySelector(selectors.regions.imagehandler);
 
+    let currentImage = target.getAttribute('data-currentimage');
+
+    const size = target.getAttribute('data-size');
+
+    const croppedImage = new Croppie(imageHandler, {
+        enableExif: true,
+        viewport: {
+            width: (size / 100) * (100),
+            height: (size / 100) * (100),
+            type: 'square',
+            enforceBoundary: true
+        },
+        enableOrientation: true,
+        showZoomer: false,
+
+    });
+    croppedImage.bind({
+        url: currentImage,
+        orientation: orientation
+    });
+
+   // setBackgroundImage(imageHandler, '');
+
+    // const zoomslider = target.querySelector(selectors.regions.zoomslider);
+    // zoomslider.classList.add('form-control-range');
+    // // Increase the slider step size so it is keyboard accessible.
+    // zoomslider.setAttribute('step', 0.01);
+
+    // Makes the viewport look like a circle
+    // if (target.getAttribute('data-rounded') === 'rounded') {
+    //     target.querySelector('.cr-viewport').classList.add('cr-vp-circle');
+    // }
+
+    confirmAction(target, getString('confirm', 'qtype_imageselect'), () => {
+        croppedImage.result('base64').then(imageData => {
+
+            let ajaxParams = {
+                imagedata: imageData.split('base64,')[1],
+                imagefilename: 'cropped.png',
+                cropped: 1,
+                component: target.getAttribute('data-component'),
+                filearea: target.getAttribute('data-filearea'),
+                contextid: target.getAttribute('data-contextid'),
+                draftitemid: target.getAttribute('data-draftitemid')
+            };
+
+            showSpinner(target, true);
+
+            updateImage({params: ajaxParams}).then(result => {
+                if (result.success) {
+                    setBackgroundImage(imageHandler, imageData);
+                    croppedImage.destroy();
+                }
+                if (result.warning) {
+                    showImageAlert(imageHandler, result.warning, 'warning');
+                }
+                showSpinner(target, false);
+                showEditActions(target);
+                return;
+            }).catch(Notification.exception);
+            return;
+        }).catch(Notification.exception);
+    });
+
+    cancelAction(target, () => {
+        croppedImage.destroy();
+        setBackgroundImage(imageHandler, currentImage);
+        showEditActions(target);
+    });
+};
+//End
 /**
  * Upload a new image.
  * @param {HTMLElement} target DOM node of the editable image wrapper.
@@ -418,7 +492,7 @@ const imageDelete = target => {
                 target.setAttribute('data-currentimage', '');
             }
             if (hiddenFormField) {
-                hiddenFormField.value = -1;
+                hiddenFormField.value = -2;
             }
             showSpinner(target, false);
             showEditActions(target);
@@ -440,6 +514,9 @@ const imageDelete = target => {
  */
 export const init = (target, siteMaxBytes) => {
     const cropimage = target.querySelector(selectors.actions.cropimage);
+    const rotateleft = target.querySelector(selectors.actions.rotateleft);
+    const rotateright = target.querySelector(selectors.actions.rotateright);
+
     const uploadimage = target.querySelector(selectors.actions.uploadimage);
     const deleteimage = target.querySelector(selectors.actions.deleteimage);
     const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
@@ -447,6 +524,16 @@ export const init = (target, siteMaxBytes) => {
     // Actions on cropping
     cropimage.addEventListener('click', e => {
         imageCropper(target);
+        e.preventDefault();
+    });
+    // Actions on rotateleft
+    rotateleft.addEventListener('click', e => {
+        imageRotator(target, 5);
+        e.preventDefault();
+    });
+    // Actions on rotateleft
+    rotateright.addEventListener('click', e => {
+        imageRotator(target, 6);
         e.preventDefault();
     });
 
