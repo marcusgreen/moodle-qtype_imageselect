@@ -296,7 +296,6 @@ const imageRotator = (target, orientation) => {
     const imageHandler = target.querySelector(selectors.regions.imagehandler);
 
     let currentImage = target.getAttribute('data-currentimage');
-
     const size = target.getAttribute('data-size');
 
     const croppedImage = new Croppie(imageHandler, {
@@ -304,36 +303,26 @@ const imageRotator = (target, orientation) => {
         viewport: {
             width: (size / 100) * (100),
             height: (size / 100) * (100),
+            boundary:{width:300, height:300},
             type: 'square',
-            enforceBoundary: true
         },
         enableOrientation: true,
         showZoomer: false,
-
     });
     croppedImage.bind({
         url: currentImage,
         orientation: orientation
     });
 
-   // setBackgroundImage(imageHandler, '');
-
-    // const zoomslider = target.querySelector(selectors.regions.zoomslider);
-    // zoomslider.classList.add('form-control-range');
-    // // Increase the slider step size so it is keyboard accessible.
-    // zoomslider.setAttribute('step', 0.01);
-
-    // Makes the viewport look like a circle
-    // if (target.getAttribute('data-rounded') === 'rounded') {
-    //     target.querySelector('.cr-viewport').classList.add('cr-vp-circle');
-    // }
+    setBackgroundImage(imageHandler, '');
 
     confirmAction(target, getString('confirm', 'qtype_imageselect'), () => {
+        debugger;
         croppedImage.result('base64').then(imageData => {
 
             let ajaxParams = {
                 imagedata: imageData.split('base64,')[1],
-                imagefilename: 'cropped.png',
+                imagefilename: 'rotated.png',
                 cropped: 1,
                 component: target.getAttribute('data-component'),
                 filearea: target.getAttribute('data-filearea'),

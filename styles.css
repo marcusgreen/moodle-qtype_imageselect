@@ -9,8 +9,6 @@
   background-position: center center;
   border-color: black;
   border-style: solid 2px;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
 }
 
 .imagehandler.round {
@@ -29,7 +27,6 @@
   position: absolute;
   top: 0;
   z-index: 100;
-  width: fit-content !important
 }
 .imagehandler_wrapper .croppie-container {
   width: 100%;
@@ -52,7 +49,7 @@
       overflow: hidden;
       margin: 0 auto;
       z-index: 1;
-      width: 200px;
+      width: 300px;
       height: 100%;
 }
 .imagehandler_wrapper .croppie-container .cr-viewport,
