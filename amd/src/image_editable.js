@@ -19,525 +19,526 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import Ajax from 'core/ajax';
-import Croppie from 'qtype_imageselect/croppie';
-import {get_string as getString} from 'core/str';
-import Templates from 'core/templates';
-import Notification from 'core/notification';
+ import Ajax from 'core/ajax';
+ import Croppie from 'qtype_imageselect/croppie';
+ import {get_string as getString} from 'core/str';
+ import Templates from 'core/templates';
+ import Notification from 'core/notification';
 
-const selectors = {
-    actions: {
-        confirm: '[data-action="confirm"]',
-        cancel: '[data-action="cancel"]',
-        cropimage: '[data-action="cropimage"]',
-        rotateleft: '[data-action="rotateleft"]',
-        rotateright: '[data-action="rotateright"]',
-        uploadimage: '[data-action="uploadimage"]',
-        deleteimage: '[data-action="deleteimage"]'
-    },
-    regions: {
-        imagehandler: '[data-region="imagehandler"]',
-        imagecontrols: '[data-region="imagecontrols"]',
-        alert: '.alert',
-        zoomslider: '.cr-slider',
-        editactions: '[data-region="editactions"]',
-        confirmactions: '[data-region="confirmactions"]',
-        spinner: '[data-region="spinner"]',
-        hiddenFormField: '[data-region="hiddenformfield"]'
-    },
-    classes: {
-        hidden: 'd-none',
-        saving: 'saving',
-        deleting: 'deleting',
-        disabled: 'disabled',
-        enabled: 'js-enabled'
-    }
-};
-/**
- * Get human file size from bytes.
- *
- * @param {Int} size
- * @returns {string} the human readable size string
- */
- export const humanFileSize = size => {
-    const i = Math.floor(Math.log(size) / Math.log(1024));
-    return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-};
-/**
- * Show an alert on the image.
- * @param  {HTMLElement} target DOM node of the editable image
- * @param  {String} msg Message to show in the alert
- * @return {Promise} Template promise.
- */
-const showImageAlert = (target, msg) => {
-    return Templates.render('core/notification', {
-        message: msg,
-        closebutton: true,
-        iswarning: true
-    }).then((html, js) => {
-        Templates.prependNodeContents(target, html, js);
-        return;
-    });
-};
-
-/**
- * Remove the image alert.
- * @param {HTMLElement} target DOM node of the editable image
- */
-const removeImageAlert = target => {
-    const alert = target.querySelector(selectors.regions.alert);
-    if (alert) {
-        alert.remove();
-    }
-};
-
-/**
- * Show the spinner.
- * @param  {HTMLElement} target DOM node of the editable image
- * @param  {Bool} show
- */
-const showSpinner = (target, show) => {
-    const spinner = target.querySelector(selectors.regions.spinner);
-    if (show) {
-        spinner.classList.remove(selectors.classes.hidden);
-    } else {
-        spinner.classList.add(selectors.classes.hidden);
-    }
-};
-
-/**
- * Show delete option
- * @param  {HTMLElement} target DOM node of the editable image
- * @param  {Bool} show
- */
- const showDeleteOption = (target, show) => {
-    const deleteimage = target.querySelector(selectors.actions.deleteimage);
-    if (show) {
-        deleteimage.classList.add(selectors.classes.enabled);
-        deleteimage.setAttribute('tabindex', 0);
-    } else {
-        deleteimage.classList.remove(selectors.classes.enabled);
-        deleteimage.setAttribute('tabindex', -1);
-    }
+ const selectors = {
+     actions: {
+         confirm: '[data-action="confirm"]',
+         cancel: '[data-action="cancel"]',
+         cropimage: '[data-action="cropimage"]',
+         rotateleft: '[data-action="rotateleft"]',
+         rotateright: '[data-action="rotateright"]',
+         uploadimage: '[data-action="uploadimage"]',
+         deleteimage: '[data-action="deleteimage"]'
+     },
+     regions: {
+         imagehandler: '[data-region="imagehandler"]',
+         imagecontrols: '[data-region="imagecontrols"]',
+         alert: '.alert',
+         zoomslider: '.cr-slider',
+         editactions: '[data-region="editactions"]',
+         confirmactions: '[data-region="confirmactions"]',
+         spinner: '[data-region="spinner"]',
+         hiddenFormField: '[data-region="hiddenformfield"]'
+     },
+     classes: {
+         hidden: 'd-none',
+         saving: 'saving',
+         deleting: 'deleting',
+         disabled: 'disabled',
+         enabled: 'js-enabled'
+     }
+ };
+ /**
+  * Get human file size from bytes.
+  *
+  * @param {Int} size
+  * @returns {string} the human readable size string
+  */
+  export const humanFileSize = size => {
+     const i = Math.floor(Math.log(size) / Math.log(1024));
+     return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+ };
+ /**
+  * Show an alert on the image.
+  * @param  {HTMLElement} target DOM node of the editable image
+  * @param  {String} msg Message to show in the alert
+  * @return {Promise} Template promise.
+  */
+ const showImageAlert = (target, msg) => {
+     return Templates.render('core/notification', {
+         message: msg,
+         closebutton: true,
+         iswarning: true
+     }).then((html, js) => {
+         Templates.prependNodeContents(target, html, js);
+         return;
+     });
  };
 
-/**
- * Show the edit actions upload image and crop image, this hides
- * the confirm actions.
- * @param  {HTMLElement} target DOM node of the editable image
- */
-const showEditActions = target => {
-    const currentimage = target.getAttribute('data-currentimage');
-    const cropimage = target.querySelector(selectors.actions.cropimage);
-    const confirmactions = target.querySelector(selectors.regions.confirmactions);
-    const editactions = target.querySelector(selectors.regions.editactions);
+ /**
+  * Remove the image alert.
+  * @param {HTMLElement} target DOM node of the editable image
+  */
+ const removeImageAlert = target => {
+     const alert = target.querySelector(selectors.regions.alert);
+     if (alert) {
+         alert.remove();
+     }
+ };
 
-    if (currentimage) {
-        cropimage.classList.remove(selectors.classes.hidden);
-        showDeleteOption(target, true);
-    } else {
-        cropimage.classList.add(selectors.classes.hidden);
-        showDeleteOption(target, false);
-    }
+ /**
+  * Show the spinner.
+  * @param  {HTMLElement} target DOM node of the editable image
+  * @param  {Bool} show
+  */
+ const showSpinner = (target, show) => {
+     const spinner = target.querySelector(selectors.regions.spinner);
+     if (show) {
+         spinner.classList.remove(selectors.classes.hidden);
+     } else {
+         spinner.classList.add(selectors.classes.hidden);
+     }
+ };
 
-    confirmactions.classList.add(selectors.classes.hidden);
-    editactions.classList.remove(selectors.classes.hidden);
+ /**
+  * Show delete option
+  * @param  {HTMLElement} target DOM node of the editable image
+  * @param  {Bool} show
+  */
+  const showDeleteOption = (target, show) => {
+     const deleteimage = target.querySelector(selectors.actions.deleteimage);
+     if (show) {
+         deleteimage.classList.add(selectors.classes.enabled);
+         deleteimage.setAttribute('tabindex', 0);
+     } else {
+         deleteimage.classList.remove(selectors.classes.enabled);
+         deleteimage.setAttribute('tabindex', -1);
+     }
+  };
+
+ /**
+  * Show the edit actions upload image and crop image, this hides
+  * the confirm actions.
+  * @param  {HTMLElement} target DOM node of the editable image
+  */
+ const showEditActions = target => {
+     const currentimage = target.getAttribute('data-currentimage');
+     const cropimage = target.querySelector(selectors.actions.cropimage);
+     const confirmactions = target.querySelector(selectors.regions.confirmactions);
+     const editactions = target.querySelector(selectors.regions.editactions);
+
+     if (currentimage) {
+         cropimage.classList.remove(selectors.classes.hidden);
+         showDeleteOption(target, true);
+     } else {
+         cropimage.classList.add(selectors.classes.hidden);
+         showDeleteOption(target, false);
+     }
+
+     confirmactions.classList.add(selectors.classes.hidden);
+     editactions.classList.remove(selectors.classes.hidden);
 
 
-    removeImageAlert(target);
-};
+     removeImageAlert(target);
+ };
 
-/**
- * Save an image from the image handler
- * @param {Object} args The request arguments
- * @return {Promise} Resolved with an array file the stored file url.
- */
-const updateImage = args => {
-    const request = {
-        methodname: 'qtype_imageselect_imageeditable_update_image',
-        args: args
-    };
+ /**
+  * Save an image from the image handler
+  * @param {Object} args The request arguments
+  * @return {Promise} Resolved with an array file the stored file url.
+  */
+ const updateImage = args => {
+     const request = {
+         methodname: 'qtype_imageselect_imageeditable_update_image',
+         args: args
+     };
 
-    let promise = Ajax.call([request])[0]
-        .fail(Notification.exception);
+     let promise = Ajax.call([request])[0]
+         .fail(Notification.exception);
 
-    return promise;
-};
+     return promise;
+ };
 
-/**
- * Set the background image
- * @param {HTMLElement} imageHandler DOM node of the editable image
- * @param {String} imageUrl the new background image url or data.
- */
-const setBackgroundImage = (imageHandler, imageUrl) => {
-    imageHandler.style.backgroundImage = 'url("' + imageUrl + '")';
-};
+ /**
+  * Set the background image
+  * @param {HTMLElement} imageHandler DOM node of the editable image
+  * @param {String} imageUrl the new background image url or data.
+  */
+ const setBackgroundImage = (imageHandler, imageUrl) => {
+     imageHandler.style.backgroundImage = 'url("' + imageUrl + '")';
+ };
 
-/**
- * Show the confirm actions, this hides the edit actions.
- * @param {HTMLElement} target DOM node of the editable image wrapper
- * @param {Promise} string promise to show on confirm button.
- * @param {function} action to execute.
- */
-const confirmAction = (target, string, action) => {
-    const confirmactions = target.querySelector(selectors.regions.confirmactions);
-    const editactions = target.querySelector(selectors.regions.editactions);
-    const confirm = target.querySelector(selectors.actions.confirm);
+ /**
+  * Show the confirm actions, this hides the edit actions.
+  * @param {HTMLElement} target DOM node of the editable image wrapper
+  * @param {Promise} string promise to show on confirm button.
+  * @param {function} action to execute.
+  */
+ const confirmAction = (target, string, action) => {
+     const confirmactions = target.querySelector(selectors.regions.confirmactions);
+     const editactions = target.querySelector(selectors.regions.editactions);
+     const confirm = target.querySelector(selectors.actions.confirm);
 
-    // Create a new button to remove all old event listeners.
-    const newconfirm = confirm.cloneNode(true);
-    confirm.parentNode.replaceChild(newconfirm, confirm);
+     // Create a new button to remove all old event listeners.
+     const newconfirm = confirm.cloneNode(true);
+     confirm.parentNode.replaceChild(newconfirm, confirm);
 
-    string.done(str => {
-        newconfirm.innerHTML = str;
+     string.done(str => {
+         newconfirm.innerHTML = str;
 
-        confirmactions.classList.remove(selectors.classes.hidden);
-        editactions.classList.add(selectors.classes.hidden);
+         confirmactions.classList.remove(selectors.classes.hidden);
+         editactions.classList.add(selectors.classes.hidden);
 
-        newconfirm.addEventListener('click', e => {
-            action();
-            e.preventDefault();
-        });
-    });
-    showDeleteOption(target, false);
-};
+         newconfirm.addEventListener('click', e => {
+             action();
+             e.preventDefault();
+         });
+     });
+     showDeleteOption(target, false);
+ };
 
-/**
- * Show the cancel actions.
- * @param {HTMLElement} target DOM node of the editable image wrapper
- * @param {function} action callback to execute.
- */
-const cancelAction = (target, action) => {
-    let cancel = target.querySelector(selectors.actions.cancel);
+ /**
+  * Show the cancel actions.
+  * @param {HTMLElement} target DOM node of the editable image wrapper
+  * @param {function} action callback to execute.
+  */
+ const cancelAction = (target, action) => {
+     let cancel = target.querySelector(selectors.actions.cancel);
 
-    // Create a new button to remove all old event listeners.
-    const newcancel = cancel.cloneNode(true);
-    cancel.parentNode.replaceChild(newcancel, cancel);
+     // Create a new button to remove all old event listeners.
+     const newcancel = cancel.cloneNode(true);
+     cancel.parentNode.replaceChild(newcancel, cancel);
 
-    newcancel.addEventListener('click', e => {
-        action();
-        e.preventDefault();
-    });
-};
+     newcancel.addEventListener('click', e => {
+         action();
+         e.preventDefault();
+     });
+ };
 
-/**
- * Crop the current image.
- * @param {HTMLElement} target DOM node of the editable image wrapper.
- */
-const imageCropper = target => {
-    const imageHandler = target.querySelector(selectors.regions.imagehandler);
+ /**
+  * Crop the current image.
+  * @param {HTMLElement} target DOM node of the editable image wrapper.
+  */
+ const imageCropper = target => {
+     const imageHandler = target.querySelector(selectors.regions.imagehandler);
 
-    let currentImage = target.getAttribute('data-currentimage');
+     let currentImage = target.getAttribute('data-currentimage');
 
-    const size = target.getAttribute('data-size');
+     const size = target.getAttribute('data-size');
 
-    const croppedImage = new Croppie(imageHandler, {
-        enableExif: true,
-        viewport: {
-            width: (size / 100) * (90),
-            height: (size / 100) * (90),
-            type: 'square'
-        }
-    });
-    croppedImage.bind({
-        url: currentImage,
-    });
+     const croppedImage = new Croppie(imageHandler, {
+         enableExif: true,
+         viewport: {
+             width: (size / 100) * (90),
+             height: (size / 100) * (90),
+             type: 'square'
+         },
 
-    setBackgroundImage(imageHandler, '');
+     });
+     croppedImage.bind({
+         url: currentImage,
+     });
 
-    const zoomslider = target.querySelector(selectors.regions.zoomslider);
-    zoomslider.classList.add('form-control-range');
-    // Increase the slider step size so it is keyboard accessible.
-    zoomslider.setAttribute('step', 0.01);
+     setBackgroundImage(imageHandler, '');
 
-    // Makes the viewport look like a circle
-    if (target.getAttribute('data-rounded') === 'rounded') {
-        target.querySelector('.cr-viewport').classList.add('cr-vp-circle');
-    }
+     const zoomslider = target.querySelector(selectors.regions.zoomslider);
+     zoomslider.classList.add('form-control-range');
+     // Increase the slider step size so it is keyboard accessible.
+     zoomslider.setAttribute('step', 0.01);
 
-    confirmAction(target, getString('cropimage', 'qtype_imageselect'), () => {
-        croppedImage.result('base64').then(imageData => {
+     // Makes the viewport look like a circle
+     if (target.getAttribute('data-rounded') === 'rounded') {
+         target.querySelector('.cr-viewport').classList.add('cr-vp-circle');
+     }
 
-            let ajaxParams = {
-                imagedata: imageData.split('base64,')[1],
-                imagefilename: 'cropped.png',
-                cropped: 1,
-                component: target.getAttribute('data-component'),
-                filearea: target.getAttribute('data-filearea'),
-                contextid: target.getAttribute('data-contextid'),
-                draftitemid: target.getAttribute('data-draftitemid')
-            };
+     confirmAction(target, getString('cropimage', 'qtype_imageselect'), () => {
+         croppedImage.result('base64').then(imageData => {
 
-            showSpinner(target, true);
+             let ajaxParams = {
+                 imagedata: imageData.split('base64,')[1],
+                 imagefilename: 'cropped.png',
+                 cropped: 1,
+                 component: target.getAttribute('data-component'),
+                 filearea: target.getAttribute('data-filearea'),
+                 contextid: target.getAttribute('data-contextid'),
+                 draftitemid: target.getAttribute('data-draftitemid')
+             };
 
-            updateImage({params: ajaxParams}).then(result => {
-                if (result.success) {
-                    setBackgroundImage(imageHandler, imageData);
-                    croppedImage.destroy();
-                }
-                if (result.warning) {
-                    showImageAlert(imageHandler, result.warning, 'warning');
-                }
-                showSpinner(target, false);
-                showEditActions(target);
-                return;
-            }).catch(Notification.exception);
-            return;
-        }).catch(Notification.exception);
-    });
+             showSpinner(target, true);
 
-    cancelAction(target, () => {
-        croppedImage.destroy();
-        setBackgroundImage(imageHandler, currentImage);
-        showEditActions(target);
-    });
-};
-const imageRotator = (target, orientation) => {
-    const imageHandler = target.querySelector(selectors.regions.imagehandler);
+             updateImage({params: ajaxParams}).then(result => {
+                 if (result.success) {
+                     setBackgroundImage(imageHandler, imageData);
+                     croppedImage.destroy();
+                 }
+                 if (result.warning) {
+                     showImageAlert(imageHandler, result.warning, 'warning');
+                 }
+                 showSpinner(target, false);
+                 showEditActions(target);
+                 return;
+             }).catch(Notification.exception);
+             return;
+         }).catch(Notification.exception);
+     });
 
-    let currentImage = target.getAttribute('data-currentimage');
-    const size = target.getAttribute('data-size');
+     cancelAction(target, () => {
+         croppedImage.destroy();
+         setBackgroundImage(imageHandler, currentImage);
+         showEditActions(target);
+     });
+ };
+ const imageRotator = (target, orientation) => {
+     const imageHandler = target.querySelector(selectors.regions.imagehandler);
 
-    const croppedImage = new Croppie(imageHandler, {
-        enableExif: true,
-        viewport: {
-            width: (size / 100) * (100),
-            height: (size / 100) * (100),
-            boundary:{width:300, height:300},
-            type: 'square',
-        },
-        enableOrientation: true,
-        showZoomer: false,
-    });
-    croppedImage.bind({
-        url: currentImage,
-        orientation: orientation
-    });
+     let currentImage = target.getAttribute('data-currentimage');
+     const size = target.getAttribute('data-size');
 
-    setBackgroundImage(imageHandler, '');
+     const croppedImage = new Croppie(imageHandler, {
+         enableExif: true,
+         viewport: {
+             width: (size / 100) * (100),
+             height: (size / 100) * (100),
+             boundary:{width:300, height:300},
+             type: 'square',
+         },
+         enableOrientation: true,
+         showZoomer: false,
+     });
+     croppedImage.bind({
+         url: currentImage,
+         orientation: orientation
+     });
 
-    confirmAction(target, getString('confirm', 'qtype_imageselect'), () => {
-        debugger;
-        croppedImage.result('base64').then(imageData => {
+     setBackgroundImage(imageHandler, '');
 
-            let ajaxParams = {
-                imagedata: imageData.split('base64,')[1],
-                imagefilename: 'rotated.png',
-                cropped: 1,
-                component: target.getAttribute('data-component'),
-                filearea: target.getAttribute('data-filearea'),
-                contextid: target.getAttribute('data-contextid'),
-                draftitemid: target.getAttribute('data-draftitemid')
-            };
+     confirmAction(target, getString('confirm', 'qtype_imageselect'), () => {
+         croppedImage.result('base64').then(imageData => {
 
-            showSpinner(target, true);
+             let ajaxParams = {
+                 imagedata: imageData.split('base64,')[1],
+                 imagefilename: 'rotated.png',
+                 cropped: 1,
+                 component: target.getAttribute('data-component'),
+                 filearea: target.getAttribute('data-filearea'),
+                 contextid: target.getAttribute('data-contextid'),
+                 draftitemid: target.getAttribute('data-draftitemid')
+             };
 
-            updateImage({params: ajaxParams}).then(result => {
-                if (result.success) {
-                    setBackgroundImage(imageHandler, imageData);
-                    croppedImage.destroy();
-                }
-                if (result.warning) {
-                    showImageAlert(imageHandler, result.warning, 'warning');
-                }
-                showSpinner(target, false);
-                showEditActions(target);
-                return;
-            }).catch(Notification.exception);
-            return;
-        }).catch(Notification.exception);
-    });
+             showSpinner(target, true);
 
-    cancelAction(target, () => {
-        croppedImage.destroy();
-        setBackgroundImage(imageHandler, currentImage);
-        showEditActions(target);
-    });
-};
-//End
-/**
- * Upload a new image.
- * @param {HTMLElement} target DOM node of the editable image wrapper.
- * @param {Int} siteMaxBytes the maximum size for these images.
- * @param {Event} event the event listener event.
- */
-const imageUploader = (target, siteMaxBytes, event) => {
-    const imageHandler = target.querySelector(selectors.regions.imagehandler);
+             updateImage({params: ajaxParams}).then(result => {
+                 if (result.success) {
+                     setBackgroundImage(imageHandler, imageData);
+                     croppedImage.destroy();
+                 }
+                 if (result.warning) {
+                     showImageAlert(imageHandler, result.warning, 'warning');
+                 }
+                 showSpinner(target, false);
+                 showEditActions(target);
+                 return;
+             }).catch(Notification.exception);
+             return;
+         }).catch(Notification.exception);
+     });
 
-    const hiddenFormField = target.querySelector(selectors.regions.hiddenFormField);
+     cancelAction(target, () => {
+         croppedImage.destroy();
+         setBackgroundImage(imageHandler, currentImage);
+         showEditActions(target);
+     });
+ };
+ //End
+ /**
+  * Upload a new image.
+  * @param {HTMLElement} target DOM node of the editable image wrapper.
+  * @param {Int} siteMaxBytes the maximum size for these images.
+  * @param {Event} event the event listener event.
+  */
+ const imageUploader = (target, siteMaxBytes, event) => {
+     const imageHandler = target.querySelector(selectors.regions.imagehandler);
 
-    let file = event.target.files[0];
+     const hiddenFormField = target.querySelector(selectors.regions.hiddenFormField);
 
-    // Only process image files.
-    if (!file.type.match('image.*')) {
-        return;
-    }
+     let file = event.target.files[0];
 
-    let backupImage = target.getAttribute('data-currentimage');
+     // Only process image files.
+     if (!file.type.match('image.*')) {
+         return;
+     }
 
-    if (backupImage === '') {
-        backupImage = target.getAttribute('data-defaultimage');
-    }
+     let backupImage = target.getAttribute('data-currentimage');
 
-    var reader = new FileReader();
-    reader.onload = (() => {
-        let filedata = reader.result;
+     if (backupImage === '') {
+         backupImage = target.getAttribute('data-defaultimage');
+     }
 
-        if (file.size > siteMaxBytes) {
-            const maxbytesstr = {
-                size: humanFileSize(siteMaxBytes),
-                file: file.name
-            };
-            getString('maxbytesfile', 'error', maxbytesstr).done(message => {
-                showImageAlert(imageHandler, message);
-            });
-            return;
-        }
+     var reader = new FileReader();
+     reader.onload = (() => {
+         let filedata = reader.result;
 
-        // Warn if image resolution is too small.
-        let img = document.createElement('img');
-        img.setAttribute('src', filedata);
-        img.addEventListener('load', () => {
-            if (img.naturalWidth < 512) {
-                getString('resolutionlow', 'qtype_imageselect').done(message => {
-                    showImageAlert(imageHandler, message);
-                });
-            }
-        });
-        setBackgroundImage(imageHandler, filedata);
+         if (file.size > siteMaxBytes) {
+             const maxbytesstr = {
+                 size: humanFileSize(siteMaxBytes),
+                 file: file.name
+             };
+             getString('maxbytesfile', 'error', maxbytesstr).done(message => {
+                 showImageAlert(imageHandler, message);
+             });
+             return;
+         }
 
-        let ajaxParams = {
-            imagefilename: file.name,
-            imagedata: filedata.split('base64,')[1],
-            cropped: 0,
-            component: target.getAttribute('data-component'),
-            filearea: target.getAttribute('data-filearea'),
-            contextid: target.getAttribute('data-contextid'),
-            draftitemid: target.getAttribute('data-draftitemid')
-        };
+         // Warn if image resolution is too small.
+         let img = document.createElement('img');
+         img.setAttribute('src', filedata);
+         img.addEventListener('load', () => {
+             if (img.naturalWidth < 512) {
+                 getString('resolutionlow', 'qtype_imageselect').done(message => {
+                     showImageAlert(imageHandler, message);
+                 });
+             }
+         });
+         setBackgroundImage(imageHandler, filedata);
 
-        confirmAction(target, getString('save', 'admin'), () => {
-            showSpinner(target, true);
-            updateImage({params: ajaxParams}).then(result => {
-                if (result.success) {
-                    target.setAttribute('data-currentimage', result.fileurl);
-                    backupImage = result.fileurl;
-                }
-                if (result.warning) {
-                    showImageAlert(imageHandler, result.warning, 'warning');
-                }
-                if (hiddenFormField) {
-                    hiddenFormField.value = ajaxParams.draftitemid;
-                }
-                showSpinner(target, false);
-                showEditActions(target);
-                return;
-            }).catch(Notification.exception);
-        });
-        cancelAction(target, () => {
-            setBackgroundImage(imageHandler, backupImage);
-            showEditActions(target);
-        });
-    });
-    // Read in the image file as a data URL.
-    reader.readAsDataURL(file);
-};
+         let ajaxParams = {
+             imagefilename: file.name,
+             imagedata: filedata.split('base64,')[1],
+             cropped: 0,
+             component: target.getAttribute('data-component'),
+             filearea: target.getAttribute('data-filearea'),
+             contextid: target.getAttribute('data-contextid'),
+             draftitemid: target.getAttribute('data-draftitemid')
+         };
 
-/**
- * Delete the image.
- *
- * @param {HTMLElement} target DOM node of the editable image wrapper.
- * @returns {String} empty
- */
-const imageDelete = target => {
-    const deleteimage = target.querySelector(selectors.actions.deleteimage);
+         confirmAction(target, getString('save', 'admin'), () => {
+             showSpinner(target, true);
+             updateImage({params: ajaxParams}).then(result => {
+                 if (result.success) {
+                     target.setAttribute('data-currentimage', result.fileurl);
+                     backupImage = result.fileurl;
+                 }
+                 if (result.warning) {
+                     showImageAlert(imageHandler, result.warning, 'warning');
+                 }
+                 if (hiddenFormField) {
+                     hiddenFormField.value = ajaxParams.draftitemid;
+                 }
+                 showSpinner(target, false);
+                 showEditActions(target);
+                 return;
+             }).catch(Notification.exception);
+         });
+         cancelAction(target, () => {
+             setBackgroundImage(imageHandler, backupImage);
+             showEditActions(target);
+         });
+     });
+     // Read in the image file as a data URL.
+     reader.readAsDataURL(file);
+ };
 
-    const hiddenFormField = target.querySelector(selectors.regions.hiddenFormField);
+ /**
+  * Delete the image.
+  *
+  * @param {HTMLElement} target DOM node of the editable image wrapper.
+  * @returns {String} empty
+  */
+ const imageDelete = target => {
+     const deleteimage = target.querySelector(selectors.actions.deleteimage);
 
-    if (!deleteimage.classList.contains(selectors.classes.enabled)) {
-        return '';
-    }
+     const hiddenFormField = target.querySelector(selectors.regions.hiddenFormField);
 
-    const defaultImage = target.getAttribute('data-defaultimage');
+     if (!deleteimage.classList.contains(selectors.classes.enabled)) {
+         return '';
+     }
 
-    const imageHandler = target.querySelector(selectors.regions.imagehandler);
+     const defaultImage = target.getAttribute('data-defaultimage');
 
-    let ajaxParams = {
-        imagedata: '',
-        imagefilename: '',
-        cropped: 0,
-        component: target.getAttribute('data-component'),
-        filearea: target.getAttribute('data-filearea'),
-        contextid: target.getAttribute('data-contextid'),
-        draftitemid: target.getAttribute('data-draftitemid'),
-        'delete': 1,
-    };
+     const imageHandler = target.querySelector(selectors.regions.imagehandler);
 
-    confirmAction(target, getString('delete', 'moodle'), () => {
-        showSpinner(target, true);
-        updateImage({params: ajaxParams}).then(result => {
-            if (result.success) {
-                setBackgroundImage(imageHandler, defaultImage);
-                target.setAttribute('data-currentimage', '');
-            }
-            if (hiddenFormField) {
-                hiddenFormField.value = -2;
-            }
-            showSpinner(target, false);
-            showEditActions(target);
-            return '';
-        }).catch(Notification.exception);
-    });
+     let ajaxParams = {
+         imagedata: '',
+         imagefilename: '',
+         cropped: 0,
+         component: target.getAttribute('data-component'),
+         filearea: target.getAttribute('data-filearea'),
+         contextid: target.getAttribute('data-contextid'),
+         draftitemid: target.getAttribute('data-draftitemid'),
+         'delete': 1,
+     };
 
-    cancelAction(target, () => {
-        showEditActions(target);
-    });
-    return '';
-};
+     confirmAction(target, getString('delete', 'moodle'), () => {
+         showSpinner(target, true);
+         updateImage({params: ajaxParams}).then(result => {
+             if (result.success) {
+                 setBackgroundImage(imageHandler, defaultImage);
+                 target.setAttribute('data-currentimage', '');
+             }
+             if (hiddenFormField) {
+                 hiddenFormField.value = -2;
+             }
+             showSpinner(target, false);
+             showEditActions(target);
+             return '';
+         }).catch(Notification.exception);
+     });
 
-/**
- * Initiate the editable image controls.
- *
- * @param {HTMLElement} target DOM node of the editable image
- * @param {int} siteMaxBytes
- */
-export const init = (target, siteMaxBytes) => {
-    const cropimage = target.querySelector(selectors.actions.cropimage);
-    const rotateleft = target.querySelector(selectors.actions.rotateleft);
-    const rotateright = target.querySelector(selectors.actions.rotateright);
+     cancelAction(target, () => {
+         showEditActions(target);
+     });
+     return '';
+ };
 
-    const uploadimage = target.querySelector(selectors.actions.uploadimage);
-    const deleteimage = target.querySelector(selectors.actions.deleteimage);
-    const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
+ /**
+  * Initiate the editable image controls.
+  *
+  * @param {HTMLElement} target DOM node of the editable image
+  * @param {int} siteMaxBytes
+  */
+ export const init = (target, siteMaxBytes) => {
+     const cropimage = target.querySelector(selectors.actions.cropimage);
+     const rotateleft = target.querySelector(selectors.actions.rotateleft);
+     const rotateright = target.querySelector(selectors.actions.rotateright);
 
-    // Actions on cropping
-    cropimage.addEventListener('click', e => {
-        imageCropper(target);
-        e.preventDefault();
-    });
-    // Actions on rotateleft
-    rotateleft.addEventListener('click', e => {
-        imageRotator(target, 5);
-        e.preventDefault();
-    });
-    // Actions on rotateleft
-    rotateright.addEventListener('click', e => {
-        imageRotator(target, 6);
-        e.preventDefault();
-    });
+     const uploadimage = target.querySelector(selectors.actions.uploadimage);
+     const deleteimage = target.querySelector(selectors.actions.deleteimage);
+     const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
 
-    // Process the uploaded file
-    uploadimage.addEventListener('change', e => {
-        imageUploader(target, siteMaxBytes, e);
-        e.preventDefault();
-    });
+     // Actions on cropping
+     cropimage.addEventListener('click', e => {
+         imageCropper(target);
+         e.preventDefault();
+     });
+     // Actions on rotateleft
+     rotateleft.addEventListener('click', e => {
+         imageRotator(target, 8);
+         e.preventDefault();
+     });
+     // Actions on rotateleft
+     rotateright.addEventListener('click', e => {
+         imageRotator(target, 6);
+         e.preventDefault();
+     });
 
-    // Delete the shown image.
-    deleteimage.addEventListener('click', e => {
-        imageDelete(target);
-        e.preventDefault();
-    });
+     // Process the uploaded file
+     uploadimage.addEventListener('change', e => {
+         imageUploader(target, siteMaxBytes, e);
+         e.preventDefault();
+     });
 
-    showEditActions(target);
-    imagecontrols.classList.add('js-enabled');
-};
+     // Delete the shown image.
+     deleteimage.addEventListener('click', e => {
+         imageDelete(target);
+         e.preventDefault();
+     });
+
+     showEditActions(target);
+     imagecontrols.classList.add('js-enabled');
+
+ };

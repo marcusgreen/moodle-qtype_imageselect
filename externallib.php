@@ -67,6 +67,8 @@ class imageeditable extends external_api {
         $filearea = $params['filearea'];
         $contextid = $params['contextid'];
         $delete = isset($params['delete']) ? 1 : 0;
+        $rotate = isset($params['rotate']) ? 1 : 0;
+
         $draftitemid = $params['draftitemid'];
         $filename = $params['imagefilename'];
 

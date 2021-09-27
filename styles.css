@@ -9,6 +9,8 @@
   background-position: center center;
   border-color: black;
   border-style: solid 2px;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .imagehandler.round {
