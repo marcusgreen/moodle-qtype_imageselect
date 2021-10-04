@@ -37,8 +37,24 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 require_once($CFG->dirroot . '/question/type/rendererbase.php');
-require_once($CFG->dirroot . '/question/type/ddimageortext/rendererbase.php');
+//require_once($CFG->dirroot . '/question/type/ddimageortext/rendererbase.php');
 
+/*
+<li class="h5p-multi-media-choice-list-item"
+    role="checkbox" aria-checked="true" aria-disabled="false"
+    aria-label="something" title="or other"
+    tabindex="0"
+    style="position: absolute; left: 313.5px; top: 0px; width: 293.5px;">
+<div class="h5p-multi-media-choice-option h5p-multi-media-choice-enabled h5p-multi-media-choice-selected">
+    <div class="h5p-multi-media-choice-media-wrapper">
+    <img src="http://localhost/wsel/pluginfile.php/32/mod_hvp/content/1/images/file-6154ab323b0f3.png"
+    class="h5p-multi-media-choice-media">
+</div>
+
+</div>
+</li>
+
+*/
 
 /**
  * Generates the output for drag-and-drop markers questions.
@@ -46,34 +62,33 @@ require_once($CFG->dirroot . '/question/type/ddimageortext/rendererbase.php');
  * @copyright  2010 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_imageselect_renderer extends qtype_ddtoimage_renderer_base {
+class qtype_imageselect_renderer extends qtype_renderer {
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
+            $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init');
 
-                global $PAGE;
 
-        $output = '';
         $question = $qa->get_question();
 
+        $output = '';
         $questiontext = $question->format_questiontext($qa);
-        $fileurl = '';
-        foreach ($question->images as $image) {
-            $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
-            $output .= '<img src=' . $fileurl . ' width="50" height="60">';
-        }
-
         $output .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+        foreach ($question->images as $place => $image) {
+            if ($place > 0) {
+                $output .= $this->embedded_element($qa, $place, $image, $options);
+            }
 
-        /* Some code to restore the state of the question as you move back and forth
-        from one question to another in a quiz and some code to disable the input fields
-        once a quesiton is submitted/marked */
-
-        /* if ($qa->get_state() == question_state::$invalid) {
-            $result .= html_writer::nonempty_tag('div',
-                    $question->get_validation_error(array('answer' => $currentanswer)),
-                    array('class' => 'validationerror'));
-        }*/
+        }
+        $output .= "</.div>";
         return $output;
+    }
+    public function embedded_element(question_attempt $qa, $place, $image, question_display_options $options) {
+         $imageitem = '<div id=selectableimage'.$image->id.'>';
+         $imageitem .= '<input  type=checkbox id=imagecheck_'.$image->id .' >';
+         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
+         $imageitem .= '<img  role="checkbox" aria-checked="false" class="selectableimage" id="img_'.$image->id.'" src=' . $fileurl . ' width="50" height="60">';
+         $imageitem .= '</div>';
+         return $imageitem;
     }
 
     public function specific_feedback(question_attempt $qa) {
@@ -117,4 +132,5 @@ class qtype_imageselect_renderer extends qtype_ddtoimage_renderer_base {
         }
         return null;
     }
+
 }
