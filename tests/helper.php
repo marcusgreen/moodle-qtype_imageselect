@@ -23,6 +23,8 @@
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+require_once($CFG->dirroot . '/question/type/imageselect/questiontype.php');
+
 /**
  * utilities used by the other test classes
  *
@@ -49,7 +51,7 @@ class qtype_imageselect_helper extends question_test_helper {
      * @param array $poptions
      * @return qtype_gapfill
      */
-    public static function make_question($questiontext = "", array $poptions =[]) {
+    public static function x_make_question($questiontext = "", array $poptions =[]) {
 
         $options = [
 
@@ -64,6 +66,31 @@ class qtype_imageselect_helper extends question_test_helper {
         $question->qtype = question_bank::get_qtype($type);
         return $question;
 
+    }
+    public static function make_question($questiontext='Select the hat') {
+        $qtype = 'imageselect';
+        question_bank::load_question_definition_classes($qtype);
+        $question = new qtype_imageselect_question();
+        $question->questiontext = $questiontext;
+        test_question_maker::initialise_a_question($question);
+        $question->qtype = question_bank::get_qtype($qtype);
+        $images = [
+                [
+                'id' => 42,
+                'questionid' => 418,
+                'no' => '1',
+                'label' => 'Apple'
+                ],
+                  [
+                'id' => 43,
+                'questionid' => 419,
+                'no' => '2',
+                'label' => 'Hat'
+                ]
+            ];
+        $question->images = $images;
+
+        return $question;
     }
 
 }

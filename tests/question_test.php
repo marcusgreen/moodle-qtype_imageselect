@@ -24,7 +24,8 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/question/type/questionbase.php');
-require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+//require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+require_once($CFG->dirroot . '/question/type/imageselect//questiontype.php');
 require_once($CFG->dirroot . '/question/type/imageselect/tests/helper.php');
 /**
  * Unit tests for the Imageselect question definition class.
@@ -35,8 +36,8 @@ require_once($CFG->dirroot . '/question/type/imageselect/tests/helper.php');
 class qtype_question_test extends advanced_testcase {
 
     public function test_get_expected_data() {
-        $question = qtype_imageselect_helper::make_question();
-        $expecteddata = array('p1' => 'raw_trimmed', 'p2' => 'raw_trimmed');
+        $question = qtype_imageselect_helper::make_question('Select the hat');
+        $expecteddata = array('i0' => 'raw_trimmed', 'i1' => 'raw_trimmed');
         $this->assertEquals($question->get_expected_data(), $expecteddata);
     }
 
