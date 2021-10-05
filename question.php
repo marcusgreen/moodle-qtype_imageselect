@@ -17,37 +17,48 @@
 /**
  * imageselect question definition class.
  *
- * @package    qtype
- * @subpackage imageselect
- * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
+ * @package    qtype_imageselect
+ * @copyright  2021 Marcus Green
 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
-*This holds the definition of a particular question of this type.
-*If you load three questions from the question bank, then you will get three instances of
-*that class. This class is not just the question definition, it can also track the current 7
-*state of a question as a student attempts it through a question_attempt instance.
-*/
-
+ * This holds the definition of a particular question of this type.
+ * If you load three questions from the question bank, then you will get three instances of
+ * that class. This class is not just the question definition, it can also track the current 7
+ * state of a question as a student attempts it through a question_attempt instance.
+ */
 
 /**
  * Represents a imageselect question.
  *
- * @copyright  THEYEAR YOURNAME (YOURCONTACTINFO)
+ * @package    qtype_imageselect
+ * @copyright  2021 Marcus Green
 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_imageselect_question extends question_graded_automatically_with_countback {
 
-    /* it may make more sense to think of this as get expected data types */
+    /**
+     * @var array place number => group number of the places in the question
+     * text where choices can be put. Places are numbered from 1.
+     */
+    public $images = [];
+    /**
+     * get expected data types
+     *
+     * @return array
+     */
     public function get_expected_data() {
-        // TODO.
-        return array();
+        $data = [];
+        foreach (array_keys($this->images) as $key) {
+            $data['i' . $key] = PARAM_RAW_TRIMMED;
+        }
+        return $data;
+
     }
     /**
      * returns string of place key value prepended with img, i.e. img_0 or img_1 etc
@@ -58,7 +69,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         return 'img_' . $place;
     }
     public function start_attempt(question_attempt_step $step, $variant) {
-        //TODO
+        // TODO
         /* there are 9 occurrances of this method defined in files called question.php a new install of Moodle
         so you are probably going to have to define it */
     }
@@ -112,14 +123,14 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
     }
 
      /**
-     * @return question_answer an answer that
-     * contains the a response that would get full marks.
-     * used in preview mode. If this doesn't return a
-     * correct value the button labeled "Fill in correct response"
-     * in the preview form will not work. This value gets written
-     * into the rightanswer field of the question_attempts table
-     * when a quiz containing this question starts.
-     */
+      * @return question_answer an answer that
+      * contains the a response that would get full marks.
+      * used in preview mode. If this doesn't return a
+      * correct value the button labeled "Fill in correct response"
+      * in the preview form will not work. This value gets written
+      * into the rightanswer field of the question_attempts table
+      * when a quiz containing this question starts.
+      */
     public function get_correct_response() {
         // TODO.
         return array();
@@ -139,28 +150,28 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
 
     public function check_file_access($qa, $options, $component, $filearea,
             $args, $forcedownload) {
-		if ('question' == $component && 'hint' == $filearea) {
-			return $this->check_hint_file_access($qa, $options, $args);
-		}else if ($filearea == 'selectableimage') {
-			$validfilearea = true;
-         } else {
+        if ('question' == $component && 'hint' == $filearea) {
+            return $this->check_hint_file_access($qa, $options, $args);
+        }else if ($filearea == 'selectableimage') {
+            $validfilearea = true;
+        } else {
             $validfilearea = false;
         }
         if ($component == 'qtype_imageselect' && $validfilearea) {
 
-			return true;
+            return true;
             // else if ($filearea == 'dragimage') {
-            //     foreach ($question->choices as $group) {
-            //         foreach ($group as $drag) {
-            //             if ($drag->id == $itemid) {
-            //                 return true;
-            //             }
-            //         }
-            //     }
-            //     return false;
+            // foreach ($question->choices as $group) {
+            // foreach ($group as $drag) {
+            // if ($drag->id == $itemid) {
+            // return true;
+            // }
+            // }
+            // }
+            // return false;
+        }
     }
-}
-///lib/editor/atto/yui/build/moodle-editor_atto-editor/moodle-editor_atto-editor.j
+    // lib/editor/atto/yui/build/moodle-editor_atto-editor/moodle-editor_atto-editor.j
     /**
      * @param array $response responses, as returned by
      *      {@link question_attempt_step::get_qt_data()}.
@@ -173,19 +184,19 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
     }
 
      /**
-     * Work out a final grade for this attempt, taking into account all the
-     * tries the student made. Used in interactive behaviour once all
-     * hints have been used.     *
-     * @param array $responses an array of arrays of the response for each try.
-     * Each element of this array is a response array, as would be
-     * passed to {@link grade_response()}. There may be between 1 and
-     * $totaltries responses.
-     * @param int $totaltries is the maximum number of tries allowed. Generally
-     * not used in the implementation.
-     * @return numeric the fraction that should be awarded for this
-     * sequence of response.
-     *
-     */
+      * Work out a final grade for this attempt, taking into account all the
+      * tries the student made. Used in interactive behaviour once all
+      * hints have been used.     *
+      * @param array $responses an array of arrays of the response for each try.
+      * Each element of this array is a response array, as would be
+      * passed to {@link grade_response()}. There may be between 1 and
+      * $totaltries responses.
+      * @param int $totaltries is the maximum number of tries allowed. Generally
+      * not used in the implementation.
+      * @return numeric the fraction that should be awarded for this
+      * sequence of response.
+      *
+      */
     public function compute_final_grade($responses, $totaltries) {
         $var = 1;
         /*This method is typically where penalty is used.
@@ -199,7 +210,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         then the student will score 3 if they get the question right first
         time, 2 if they get it right second try, and 1 of they get it right
         on the third try.*/
-        //TODO
+        // TODO
         return 0;
     }
 }

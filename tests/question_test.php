@@ -16,8 +16,8 @@
 /**
  * Contains the helper class for the select missing words question type tests.
  *
- * @package    qtype
- * @copyright  Year Yourname
+ * @package    qtype_imageselect
+ * @copyright  2021 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -25,19 +25,23 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
-require_once($CFG->dirroot . '/question/type/YOURQTYPE/question.php');
+require_once($CFG->dirroot . '/question/type/imageselect/tests/helper.php');
 /**
- * Unit tests for the YOURQTYPE question definition class.
+ * Unit tests for the Imageselect question definition class.
  *
  * @copyright  2012 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_YOURQTYPE_question_test extends advanced_testcase {
-  
-      public function test_get_expected_data() {
+class qtype_question_test extends advanced_testcase {
+
+    public function test_get_expected_data() {
+        $question = qtype_imageselect_helper::make_question();
+        $expecteddata = array('p1' => 'raw_trimmed', 'p2' => 'raw_trimmed');
+        $this->assertEquals($question->get_expected_data(), $expecteddata);
     }
-  
-      public function test_compute_final_grade() {
+
+
+    public function test_compute_final_grade() {
 
     }
 }

@@ -21,3 +21,49 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+/**
+ * utilities used by the other test classes
+ *
+ * @package    qtype_imageselect
+ * @copyright  2021 Marcus Green
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class qtype_imageselect_helper extends question_test_helper {
+
+    /**
+     *  must be implemented or class made abstract
+     *
+     * @return string
+     */
+    public function get_test_questions() {
+        return [];
+    }
+
+
+    /**
+     * Slight improvements over original make_question class
+     *
+     * @param string $questiontext
+     * @param array $poptions
+     * @return qtype_gapfill
+     */
+    public static function make_question($questiontext = "", array $poptions =[]) {
+
+        $options = [
+
+        ];
+
+        $type = 'imageselect';
+        question_bank::load_question_definition_classes($type);
+        $question = new qtype_imageselect_question();
+        $question->questiontext = $questiontext;
+        test_question_maker::initialise_a_question($question);
+
+        $question->qtype = question_bank::get_qtype($type);
+        return $question;
+
+    }
+
+}
