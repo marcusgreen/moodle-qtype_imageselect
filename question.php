@@ -139,6 +139,8 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       * when a quiz containing this question starts.
       */
     public function get_correct_response() {
+       // $correctplaces = $this->get_correct_places($this->questiontext, $this->delimitchars);
+
         $correctresponse['p1'] = 'on';
         $correctresponse['p2'] = 'on';
         return $correctresponse;

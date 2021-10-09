@@ -183,9 +183,9 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
          $selectableimageitem[] = $mform->createElement('singleimage', 'imageitem', "", null, $singleimageoptions);
 
-         $selectableimageitem[] = $mform->createElement('text', 'imagelabel',
-                                                get_string('imagelabel', 'qtype_imageselect'),
-                                                ['size' => 30, 'class' => 'tweakcss draglabel']);
+         $selectableimageitem[] = $mform->createElement('text', 'imagelabel', get_string('imagelabel', 'qtype_imageselect'),
+         ['size' => 30, 'class' => 'tweakcss draglabel']);
+
         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
         return $selectableimageitem;
     }

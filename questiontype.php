@@ -165,10 +165,6 @@ class qtype_imageselect extends question_type {
         if (empty($questiondata->options->images)) {
             return;
         }
-        $placecounter = 0;
-        foreach ($questiondata->options->images as $a) {
-            $question->places[$placecounter++] = "";
-        }
     }
 
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
