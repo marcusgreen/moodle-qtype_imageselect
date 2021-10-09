@@ -153,9 +153,22 @@ class qtype_imageselect extends question_type {
         );
     }
 
+    /**
+     * called when previewing or at runtime in a quiz
+     *
+     * @param question_definition $question
+     * @param stdClass $questiondata
+     * @param boolean $forceplaintextanswers
+     */
     public function initialise_question_answers(question_definition $question, $questiondata, $forceplaintextanswers = true) {
-        // TODO
-
+        $question->answers = [];
+        if (empty($questiondata->options->images)) {
+            return;
+        }
+        $placecounter = 0;
+        foreach ($questiondata->options->images as $a) {
+            $question->places[$placecounter++] = "";
+        }
     }
 
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
@@ -204,5 +217,7 @@ class qtype_imageselect extends question_type {
         $this->initialise_question_answers($question, $questiondata);
         $this->initialise_combined_feedback($question, $questiondata);
         $question->images = $questiondata->options->images;
+
+
     }
 }

@@ -55,7 +55,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
     public function get_expected_data() {
         $data = [];
         foreach (array_keys($this->images) as $key) {
-            $data['i' . $key] = PARAM_RAW_TRIMMED;
+            $data['p' . $key] = PARAM_RAW_TRIMMED;
         }
         return $data;
 
@@ -66,7 +66,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      * @return string the question-type variable name.
      */
     public function field($place) {
-        return 'img_' . $place;
+        return 'p' . $place;
     }
     public function start_attempt(question_attempt_step $step, $variant) {
         // TODO
@@ -74,13 +74,20 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         so you are probably going to have to define it */
     }
 
+
     /**
-     * @return summary a string that summarises how the user responded. This
-     * is used in the quiz responses report
-     * */
+     * Value returned will be written to responsesummary field of
+     * the question_attempts table
+     *
+     * @param array $response
+     * @return string
+     */
     public function summarise_response(array $response) {
-        // TODO.
-        return null;
+        $summary = "";
+        foreach ($response as $value) {
+            $summary .= " " . $value . " ";
+        }
+        return $summary;
     }
 
     public function is_complete_response(array $response) {
@@ -118,8 +125,8 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
 
     public function is_same_response(array $prevresponse, array $newresponse) {
         // TODO.
-        return question_utils::arrays_same_at_key_missing_is_blank(
-                $prevresponse, $newresponse, 'answer');
+        return false;
+
     }
 
      /**
@@ -132,8 +139,9 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       * when a quiz containing this question starts.
       */
     public function get_correct_response() {
-        // TODO.
-        return array();
+        $correctresponse['p1'] = 'on';
+        $correctresponse['p2'] = 'on';
+        return $correctresponse;
     }
     /**
      * Given a response, reset the parts that are wrong. Relevent in

@@ -37,11 +37,15 @@ class qtype_question_test extends advanced_testcase {
 
     public function test_get_expected_data() {
         $question = qtype_imageselect_helper::make_question('Select the hat');
-        $expecteddata = array('i0' => 'raw_trimmed', 'i1' => 'raw_trimmed');
+        $expecteddata = array('p0' => 'raw_trimmed', 'p1' => 'raw_trimmed');
         $this->assertEquals($question->get_expected_data(), $expecteddata);
     }
 
-
+    public function test_summarise_response_() {
+        $question = qtype_imageselect_helper::make_question('Select the hat');
+        $response = array('p1' => 'cat', 'p2' => 'dog');
+        $this->assertEquals($question->summarise_response($response), " cat  dog ");
+    }
     public function test_compute_final_grade() {
 
     }

@@ -21,12 +21,12 @@
 
 export const init = () => {
   var clickables = document.querySelectorAll(".selectableimage");
-  debugger;
   clickables.forEach(item => {
     item.addEventListener('click', event => {
       var el = document.getElementById(event.currentTarget.id);
       var id = event.currentTarget.id;
-      var number = id.split('_')[1];
+      var number = id.split('-')[1];
+      debugger;
       var cbx = document.getElementById('imagecheck_'+number);
       if (el.style.borderStyle == 'dotted') {
         el.style.borderStyle = '';
