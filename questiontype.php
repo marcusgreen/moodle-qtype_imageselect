@@ -85,6 +85,7 @@ class qtype_imageselect extends question_type {
             $image = new stdClass();
             $image->questionid = $formdata->id;
             $image->no = $imageno + 1;
+            $image->fraction = $formdata->images[$imageno]['fraction'];
             $image->label = $formdata->imagelabel[$imageno];
                 $info = file_get_draft_area_info($formdata->imageitem[$imageno]);
             if ($info['filecount'] > 0 || ('' != trim($formdata->imagelabel[$imageno]))) {
