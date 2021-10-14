@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Contains the helper class for the select missing words question type tests.
+ * Contains the helper class for the select image select question type tests.
  *
  * @package    qtype
  * @copyright  Year Yourname

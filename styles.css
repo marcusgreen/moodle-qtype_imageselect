@@ -1,7 +1,7 @@
 .qtype_imageselect .selected {
   border-color: #1a73d9;
   position: relative;
-  border-width: ;
+  border-style : dotted;
 }
 
 

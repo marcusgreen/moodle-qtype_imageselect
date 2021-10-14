@@ -68,12 +68,29 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
     public function field($place) {
         return 'p' . $place;
     }
+
     public function start_attempt(question_attempt_step $step, $variant) {
+        parent::start_attempt($step, $variant);
+
         // TODO
         /* there are 9 occurrances of this method defined in files called question.php a new install of Moodle
         so you are probably going to have to define it */
     }
-
+    /**
+     * At runtime, decide if a word has been clicked on to select
+     *
+     * @param number $place
+     * @param array $response
+     * @return boolean
+     */
+    public function is_image_selected($place, $response) {
+        $responseplace = 'p' . $place;
+        if (isset($response[$responseplace]) && (($response[$responseplace] == "on" ) || ($response[$responseplace] == "true" ) )) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Value returned will be written to responsesummary field of
@@ -89,15 +106,22 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         }
         return $summary;
     }
-
+    /**
+     *
+     * Have any images been selected?
+     *
+     * @param array $response
+     * @return boolean
+     */
     public function is_complete_response(array $response) {
-        // TODO.
-        /* You might want to check that the user has done something
-            before returning true, e.g. clicked a radio button or entered some
-            text
-            */
-        return true;
+        foreach ($response as $item) {
+            if ($item == "on") {
+                return true;
+            }
+        }
+        return false;
     }
+
 
     public function get_validation_error(array $response) {
         // TODO.
@@ -124,9 +148,11 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      */
 
     public function is_same_response(array $prevresponse, array $newresponse) {
-        // TODO.
-        return false;
-
+        if ($prevresponse === $newresponse) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
      /**
@@ -221,6 +247,6 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         time, 2 if they get it right second try, and 1 of they get it right
         on the third try.*/
         // TODO
-        return 0;
+        return 1;
     }
 }

@@ -165,10 +165,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
     protected function selectable_image($mform) {
         $selectableimageitem = [];
-        $grouparray = [];
-
-        $grouparray[] = $mform->createElement('advcheckbox', 'fraction', ' ',
-        get_string('iscorrect', 'qtype_imageselect'));
 
          $singleimageoptions = [
             'maxbytes' => 100,
@@ -179,13 +175,16 @@ class qtype_imageselect_edit_form extends question_edit_form {
             'size' => 1000
          ];
 
+         $selectableimageitem[] = $mform->createElement('group', 'images',
+         get_string('selectableitemheader', 'qtype_imageselect', '{no}'));
+
          $selectableimageitem[] = $mform->createElement('singleimage', 'imageitem', "", null, $singleimageoptions);
 
          $selectableimageitem[] = $mform->createElement('text', 'imagelabel', get_string('imagelabel', 'qtype_imageselect'),
          ['size' => 30, 'class' => 'tweakcss draglabel']);
 
-         $selectableimageitem[] = $mform->createElement('group', 'images',
-          get_string('selectableitemheader', 'qtype_imageselect', '{no}'), $grouparray);
+        $selectableimageitem[] = $mform->createElement('advcheckbox', 'fraction', ' ',
+        get_string('iscorrect', 'qtype_imageselect'));
 
         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
         return $selectableimageitem;
