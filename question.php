@@ -54,8 +54,8 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      */
     public function get_expected_data() {
         $data = [];
-        foreach (array_keys($this->images) as $key) {
-            $data['p' . $key] = PARAM_RAW_TRIMMED;
+        foreach ($this->images as $image) {
+            $data['p' . $image->no] = PARAM_RAW_TRIMMED;
         }
         return $data;
 
@@ -148,6 +148,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      */
 
     public function is_same_response(array $prevresponse, array $newresponse) {
+        return false;
         if ($prevresponse === $newresponse) {
             return true;
         } else {

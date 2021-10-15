@@ -25,8 +25,9 @@ export const init = () => {
     item.addEventListener('click', event => {
       var el = document.getElementById(event.currentTarget.id);
       var id = event.currentTarget.id;
-      var number = id.split('-')[1];
-      debugger;
+      var number = id.split('_')[1];
+      // var number = string.substring(string.indexOf(character) + 99)
+      // debugger;
       var cbx = document.getElementById('imagecheck_'+number);
       if (el.style.borderStyle == 'dotted') {
         el.style.borderStyle = '';

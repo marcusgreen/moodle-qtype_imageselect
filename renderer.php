@@ -65,57 +65,43 @@ require_once($CFG->dirroot . '/question/type/rendererbase.php');
 class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
 
     public function formulation_and_controls(question_attempt $qa,
-            question_display_options $options) {
+        question_display_options $options) {
 
-            $response = $qa->get_last_qt_data();
+        $response = $qa->get_last_qt_data();
 
-            $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init');
+        $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init');
 
-            $question = $qa->get_question();
+        $question = $qa->get_question();
 
-            $output = '';
-            $questiontext = $question->format_questiontext($qa);
-            $output .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
-            foreach ($question->images as $place => $image) {
-            /* if the current image exists in the response */
-            $isselected = $question->is_image_selected($place, $response);
-            if ($place > 0) {
-                $output .= $this->embedded_element($qa, $place, $options, $response, $isselected);
-            }
+        $output = '';
+        $output .= $question->format_questiontext($qa);
+        foreach ($question->images as $image) {
+            $isselected = $question->is_image_selected($image->no, $response);
+            $output .= $this->embedded_element($qa, $image, $options, $isselected);
 
         }
-        $output .= "</div>";
+        $output = html_writer::tag('div', $output, ['class' => 'qtext']);
+
         return $output;
     }
-    public function embedded_element(question_attempt $qa, int $place,  question_display_options $options, array  $response, $isselected) {
-        $img = new stdClass();
-
-        $img->id = $this->get_input_id($qa, $place);
-        $img->classes[] = "selectableimage";
-        $imageitem = '<div name="selectableimage_'.$img->id.'">';
-        $fileurl = self::get_url_for_image($qa, 'selectableimage', $place);
-        $imageitem .= '<img  class="selectableimage" name="'.$img->id.'" id="selectableimage-'.$img->id.'" src=' . $fileurl . ' width="50" height="60">';
+    public function embedded_element(question_attempt $qa, $image,  question_display_options $options, $isselected) {
+        // $img = new stdClass();
+        $image->item = $this->get_input_id($qa, $image->no);
+        $image->classes[] = "selectableimage";
+        $imageitem = '<div name="selectableimage_p'.$image->no.'">';
+        $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
+        $imageitem .= '<img  class="selectableimage" name="'.$image->item.'" id="selectableimage-'.$image->item.'" src=' . $fileurl . ' width="50" height="60">';
 
         $properties = [
             'type' => 'checkbox',
-            'name' => $img->id,
-            'id' => 'imagecheck_'.$img->id,
+            'name' => $image->item,
+            'id' => $image->item,
             'class' => 'selcheck',
         ];
 
-        $qasdata = $qa->get_last_qt_var('p'.$place);
-         //$qasdata = $response['p'.$place];
-        // if (($qasdata == "on") || ($qasdata == "true")) {
-        //     $properties['class'] = 'selected';
-        //  //   $properties['aria-checked'] = 'true';
-        //     $properties['checked'] = 'true';
-        // } else {
-        //     //$properties['aria-checked'] = 'false';
-        // }
         if ($isselected) {
              $properties['checked'] = 'true';
         }
-
 
         $checkbox = html_writer::empty_tag('input', $properties);
         $imageitem .= $checkbox;
