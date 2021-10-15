@@ -88,7 +88,7 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         // $img = new stdClass();
         $image->item = $this->get_input_id($qa, $image->no);
         $image->classes[] = "selectableimage";
-        $imageitem = '<div name="selectableimage_p'.$image->no.'">';
+        $imageitem = '<div role="checkbox" name="selectableimage_p'.$image->no.'">';
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
         $imageitem .= '<img  class="selectableimage" name="'.$image->item.'" id="selectableimage-'.$image->item.'" src=' . $fileurl . ' width="50" height="60">';
 
@@ -97,13 +97,26 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
             'name' => $image->item,
             'id' => $image->item,
             'class' => 'selcheck',
+            'role' => 'checkbox'
         ];
+
+
 
         if ($isselected) {
              $properties['checked'] = 'true';
         }
 
         $checkbox = html_writer::empty_tag('input', $properties);
+
+        $properties = [
+            'type' => 'hidden',
+            'name' => $image->item,
+            'role' => 'checkbox',
+            'value' => 'off'
+        ];
+        $hidden = html_writer::empty_tag('input', $properties);
+        $imageitem .= $hidden;
+
         $imageitem .= $checkbox;
         $imageitem .= '</div>';
         return $imageitem;

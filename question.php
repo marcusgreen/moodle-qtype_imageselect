@@ -114,6 +114,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      * @return boolean
      */
     public function is_complete_response(array $response) {
+        return true;
         foreach ($response as $item) {
             if ($item == "on") {
                 return true;
@@ -121,7 +122,9 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         }
         return false;
     }
-
+    public function is_gradable_response(array $response) {
+        return $this->is_complete_response($response);
+    }
 
     public function get_validation_error(array $response) {
         // TODO.
@@ -148,7 +151,6 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      */
 
     public function is_same_response(array $prevresponse, array $newresponse) {
-        return false;
         if ($prevresponse === $newresponse) {
             return true;
         } else {
@@ -167,7 +169,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       */
     public function get_correct_response() {
        // $correctplaces = $this->get_correct_places($this->questiontext, $this->delimitchars);
-
+        return [];
         $correctresponse['p1'] = 'on';
         $correctresponse['p2'] = 'on';
         return $correctresponse;
