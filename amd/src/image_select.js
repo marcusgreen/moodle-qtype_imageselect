@@ -27,13 +27,13 @@ export const init = () => {
       var id = event.currentTarget.id;
       var number = id.split('_')[1];
       // var number = string.substring(string.indexOf(character) + 99)
-      // debugger;
+      debugger;
       var cbx = document.getElementById('imagecheck_'+number);
-      if (el.style.borderStyle == 'dotted') {
-        el.style.borderStyle = '';
+      if (cbx.checked) {
+        el.classList.remove("selected");
         cbx.checked = false;
       } else {
-        el.style.borderStyle = 'dotted';
+        el.classList.add("selected");
         cbx.checked = true;
       }
 

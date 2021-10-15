@@ -80,7 +80,7 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
             $output .= $this->embedded_element($qa, $image, $options, $isselected);
 
         }
-        $output = html_writer::tag('div', $output, ['class' => 'qtext']);
+        $output = html_writer::tag('div', $output, ['class' => 'qtext qtype_imageselect']);
 
         return $output;
     }
@@ -88,18 +88,19 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         // $img = new stdClass();
         $image->item = $this->get_input_id($qa, $image->no);
         $image->classes[] = "selectableimage";
+        $class = $isselected ? 'selected' : '';
+
         $imageitem = '<div role="checkbox" name="selectableimage_p'.$image->no.'">';
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
-        $imageitem .= '<img  class="selectableimage" name="'.$image->item.'" id="selectableimage-'.$image->item.'" src=' . $fileurl . ' width="50" height="60">';
+        $imageitem .= '<img  class="selectableimage '. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src=' . $fileurl . ' width="50" height="60">';
 
         $properties = [
             'type' => 'checkbox',
             'name' => $image->item,
-            'id' => $image->item,
+            'id' => 'imagecheck_p'.$image->no,
             'class' => 'selcheck',
             'role' => 'checkbox'
         ];
-
 
 
         if ($isselected) {
