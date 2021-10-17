@@ -52,7 +52,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      *
      * @return array
      */
-    public function get_expected_data() {
+    public function x_get_expected_data() {
         $data = [];
         foreach ($this->images as $image) {
             $data['p' . $image->no] = PARAM_RAW_TRIMMED;
@@ -60,6 +60,25 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         return $data;
 
     }
+
+    /**
+     * Return an array of the question type variables that could be submitted
+     * as part of a question of this type, with their types, so they can be
+     * properly cleaned.
+     * @return array variable name => PARAM_... constant.
+     */
+    public function get_expected_data() {
+        $data = [];
+        if ($this->single) {
+            $data['p'] = PARAM_RAW_TRIMMED;
+        } else {
+            foreach ($this->images as $image) {
+                $data['p' . $image->no] = PARAM_RAW_TRIMMED;
+            }
+        }
+        return $data;
+    }
+
     /**
      * returns string of place key value prepended with img, i.e. img_0 or img_1 etc
      * @param int $place stem number
@@ -168,7 +187,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       * when a quiz containing this question starts.
       */
     public function get_correct_response() {
-       // $correctplaces = $this->get_correct_places($this->questiontext, $this->delimitchars);
+        // $correctplaces = $this->get_correct_places($this->questiontext, $this->delimitchars);
         return [];
         $correctresponse['p1'] = 'on';
         $correctresponse['p2'] = 'on';

@@ -75,16 +75,18 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
 
         $output = '';
         $output .= $question->format_questiontext($qa);
+
+
         foreach ($question->images as $image) {
             $isselected = $question->is_image_selected($image->no, $response);
-            $output .= $this->embedded_element($qa, $image, $options, $isselected);
+            $output .= $this->embedded_element($qa, $image, $options, $isselected, $question->single);
 
         }
         $output = html_writer::tag('div', $output, ['class' => 'qtext qtype_imageselect']);
 
         return $output;
     }
-    public function embedded_element(question_attempt $qa, $image,  question_display_options $options, $isselected) {
+    public function embedded_element(question_attempt $qa, $image,  question_display_options $options, $isselected, $single) {
         // $img = new stdClass();
         $image->item = $this->get_input_id($qa, $image->no);
         $image->classes[] = "selectableimage";
@@ -94,14 +96,20 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
         $imageitem .= '<img  class="selectableimage '. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src=' . $fileurl . ' width="50" height="60">';
 
+        if ($single) {
+            $name = $qa->get_qt_field_name('').'p';
+        } else {
+            $name = $image->item;
+        };
+
         $properties = [
-            'type' => 'checkbox',
-            'name' => $image->item,
+            'type' => $single ? 'radio' : 'checkbox',
+            'name' => $name,
             'id' => 'imagecheck_p'.$image->no,
             'class' => 'selcheck',
-            'role' => 'checkbox'
+            'role' => 'checkbox',
+            'value' => $image->no,
         ];
-
 
         if ($isselected) {
              $properties['checked'] = 'true';
@@ -113,8 +121,11 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
             'type' => 'hidden',
             'name' => $image->item,
             'role' => 'checkbox',
-            'value' => 'off'
         ];
+
+        if ($single) {
+            $properties['checked'] = 'checked';
+        }
         $hidden = html_writer::empty_tag('input', $properties);
         $imageitem .= $hidden;
 

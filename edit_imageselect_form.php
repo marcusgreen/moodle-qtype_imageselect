@@ -134,8 +134,19 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->editoroptions);
         $mform->setType('questiontext', PARAM_RAW);
         $mform->addHelpButton('questiontext', 'questiontext', 'qtype_imageselect');
+
+        $menu = [
+            get_string('answersingleno', 'qtype_multichoice'),
+            get_string('answersingleyes', 'qtype_multichoice')
+        ];
+        $mform->addElement('select', 'single',
+                get_string('answerhowmany', 'qtype_multichoice'), $menu);
+        $mform->setDefault('single', $this->get_default_value('single',
+            get_config('qtype_multichoice', 'answerhowmany')));
+
         list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
         $this->definition_selectable_images($mform, $itemrepeatsatstart);
+
 
         $mform->removeelement('defaultmark');
         $mform->removeelement('generalfeedback');

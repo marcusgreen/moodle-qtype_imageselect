@@ -67,10 +67,13 @@ class qtype_imageselect extends question_type {
         if (!$options) {
             $options = new stdClass();
             $options->questionid = $formdata->id;
+            $options->single = 0;
             $options->correctfeedback = '';
             $options->partiallycorrectfeedback = '';
             $options->incorrectfeedback = '';
             $options->id = $DB->insert_record('question_imageselect', $options);
+        } else {
+            $options->single = $formdata->single;
         }
         $options = $this->save_combined_feedback_helper($options, $formdata, $formdata->context, true);
         $DB->update_record('question_imageselect', $options);
@@ -127,6 +130,7 @@ class qtype_imageselect extends question_type {
         if (!$options) {
             $options = new stdClass();
             $options->question = $question->id;
+            $options->single = 0;
             $options->correctfeedback = '';
             $options->partiallycorrectfeedback = '';
             $options->incorrectfeedback = '';
@@ -214,7 +218,7 @@ class qtype_imageselect extends question_type {
         $this->initialise_question_answers($question, $questiondata);
         $this->initialise_combined_feedback($question, $questiondata);
         $question->images = $questiondata->options->images;
-
+        $question->single = $questiondata->options->single;
 
     }
 }
