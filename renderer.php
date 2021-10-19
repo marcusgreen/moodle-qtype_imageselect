@@ -69,9 +69,9 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
 
         $response = $qa->get_last_qt_data();
 
-        $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init');
-
         $question = $qa->get_question();
+
+        $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init', [$question->single]);
 
         $output = '';
         $output .= $question->format_questiontext($qa);

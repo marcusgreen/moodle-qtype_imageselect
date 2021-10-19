@@ -73,6 +73,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
                     $fileexists = self::file_uploaded($question->imageitem[$imageindex]);
                 }
                 $question->imagelabel[$imageindex] = $image->label;
+                $question->fraction[$imageindex] = $image->fraction;
+
                 // MAVG
                 // $question->imageitem[$imageindex] = $image->id;
 
@@ -147,7 +149,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
         list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
         $this->definition_selectable_images($mform, $itemrepeatsatstart);
 
-
         $mform->removeelement('defaultmark');
         $mform->removeelement('generalfeedback');
         $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question'), ['rows' => 10], $this->editoroptions);
@@ -193,11 +194,15 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
          $selectableimageitem[] = $mform->createElement('text', 'imagelabel', get_string('imagelabel', 'qtype_imageselect'),
          ['size' => 30, 'class' => 'tweakcss draglabel']);
+         $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
 
         $selectableimageitem[] = $mform->createElement('advcheckbox', 'fraction', ' ',
         get_string('iscorrect', 'qtype_imageselect'));
 
-        $mform->setType('imagelabel', PARAM_RAW); // These are validated manually.
+        // $selectableimageitem[] = $mform->createElement('text', 'fraction', 'Fraction ');
+        // get_string('iscorrect', 'qtype_imageselect'));
+        $mform->setType('fraction', PARAM_RAW);
+
         return $selectableimageitem;
     }
 

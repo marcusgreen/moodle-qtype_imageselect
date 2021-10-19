@@ -19,16 +19,14 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-export const init = () => {
+export const init = (isSingle) => {
   var clickables = document.querySelectorAll(".selectableimage");
   clickables.forEach(item => {
     item.addEventListener('click', event => {
       var el = document.getElementById(event.currentTarget.id);
       var id = event.currentTarget.id;
       var number = id.split('_')[1];
-      // var number = string.substring(string.indexOf(character) + 99)
-      debugger;
-      var cbx = document.getElementById('imagecheck_'+number);
+      var cbx = document.getElementById('imagecheck_' + number);
       if (cbx.checked) {
         el.classList.remove("selected");
         cbx.checked = false;
@@ -36,9 +34,20 @@ export const init = () => {
         el.classList.add("selected");
         cbx.checked = true;
       }
+      if (isSingle) {
+        clearStyle(el, clickables, id);
+      }
 
     });
-  });
+    function clearStyle(el,clickables, id) {
+      clickables.forEach(item => {
+        console.debug(item.id);
+        if (item.id !== id) {
+          document.getElementById(item.id).classList.remove("selected");
+        }
+      });
+    }
 
+  });
 
 };
