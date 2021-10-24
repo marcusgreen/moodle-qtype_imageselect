@@ -41,7 +41,6 @@ export const init = (isSingle) => {
     });
     function clearStyle(el,clickables, id) {
       clickables.forEach(item => {
-        console.debug(item.id);
         if (item.id !== id) {
           document.getElementById(item.id).classList.remove("selected");
         }

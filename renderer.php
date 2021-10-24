@@ -69,47 +69,46 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
 
         $response = $qa->get_last_qt_data();
 
-        $question = $qa->get_question();
+        $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init');
 
-        $this->page->requires->js_call_amd('qtype_imageselect/image_select', 'init', [$question->single]);
+        $question = $qa->get_question();
 
         $output = '';
         $output .= $question->format_questiontext($qa);
-
-
         foreach ($question->images as $image) {
             $isselected = $question->is_image_selected($image->no, $response);
-            $output .= $this->embedded_element($qa, $image, $options, $isselected, $question->single);
+            $output .= $this->embedded_element($qa, $image, $options, $isselected);
 
         }
         $output = html_writer::tag('div', $output, ['class' => 'qtext qtype_imageselect']);
-
+        // $output .= '<script src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script>';
+        // $output .= '<script>
+        //                 // debugger;
+        //                 // console.log("hello");
+        //                 // const observer = lozad();
+        //                 // observer.observe();
+        //              </script>';
         return $output;
     }
-    public function embedded_element(question_attempt $qa, $image,  question_display_options $options, $isselected, $single) {
-        // $img = new stdClass();
+    public function embedded_element(question_attempt $qa, $image,  question_display_options $options, $isselected) {
         $image->item = $this->get_input_id($qa, $image->no);
         $image->classes[] = "selectableimage";
-        $class = $isselected ? 'selected' : '';
+        $class = $isselected ? ' selected' : '';
 
         $imageitem = '<div role="checkbox" name="selectableimage_p'.$image->no.'">';
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
-        $imageitem .= '<img  class="selectableimage '. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src=' . $fileurl . ' width="50" height="60">';
-
-        if ($single) {
-            $name = $qa->get_qt_field_name('').'p';
-        } else {
-            $name = $image->item;
-        };
+       // $dimensions = ' width="100px" height="100px"';
+        $dimensions = "";
+        $imageitem .= '<img  class="selectableimage'. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src="' . $fileurl .'" '.$dimensions. ' loading="lazy" >';
 
         $properties = [
-            'type' => $single ? 'radio' : 'checkbox',
-            'name' => $name,
+            'type' => 'checkbox',
+            'name' => $image->item,
             'id' => 'imagecheck_p'.$image->no,
-            'class' => 'selcheck',
-            'role' => 'checkbox',
-            'value' => $image->no,
+            'class' => 'selcheck '. $isselected ? 'selected' : '',
+            'role' => 'checkbox'
         ];
+
 
         if ($isselected) {
              $properties['checked'] = 'true';
@@ -121,11 +120,8 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
             'type' => 'hidden',
             'name' => $image->item,
             'role' => 'checkbox',
+            'value' => 'off'
         ];
-
-        if ($single) {
-            $properties['checked'] = 'checked';
-        }
         $hidden = html_writer::empty_tag('input', $properties);
         $imageitem .= $hidden;
 

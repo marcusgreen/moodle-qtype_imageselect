@@ -79,6 +79,14 @@ class handler {
         $fs = get_file_storage();
         $fs->create_file_from_string($filerecord, $binary);
 
+        // $file = $fs->get_file(
+        //     $context->id,
+        //      $component,
+        //      $filearea,
+        //      $entryid,
+        //      $filepath,
+        //      $filename);
+
         $user = \core_user::get_user($context->instanceid, '*', MUST_EXIST);
         $user->imagefile = $draftitemid;
         $filemanageroptions = ['maxbytes' => $CFG->maxbytes,

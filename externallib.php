@@ -99,6 +99,13 @@ class imageeditable extends external_api {
                 'filename' => $filename,
             );
             $tempfile = $fs->create_file_from_string($draftfile, $binary);
+
+            $maxwidth = 100;
+            $maxheight = 100;
+            $filedata = $tempfile->resize_image($maxwidth, $maxheight);
+
+            $fs->delete_area_files($personalcontext->id, 'user', 'draft', $draftitemid);
+            $tempfile = $fs->create_file_from_string($draftfile, $filedata);
             $url = \moodle_url::make_draftfile_url(
                 $draftitemid,
                 '/',
