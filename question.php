@@ -170,7 +170,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
     public function get_correct_response() {
         $correctresponse = [];
         foreach ($this->images as $image) {
-            $correctresponse[$image->no] = (float) $image->fraction > 0 ? 'on' : 'off';
+            $correctresponse['p'.$image->no] = (float) $image->fraction > 0 ? 'on' : 'off';
         }
         return $correctresponse;
     }
@@ -216,7 +216,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      *      {@link question_attempt_step::get_qt_data()}.
      * @return array (number, integer) the fraction, and the state.
      */
-    public function grade_response(array $response) {
+    public function grade_response(array $responses) {
         //return parent::grade_response($response);
         // $fraction = 0;
         // $correctresponses = $this->get_correct_response();
@@ -229,7 +229,15 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         //return array($fraction, question_state::graded_state_for_fraction($fraction));
         // $grade = array(1, question_state::graded_state_for_fraction(1));
         // return $grade;
+        $correctresponses = $this->get_correct_response();
         $fraction = 0;
+        foreach ($responses as $key => $response) {
+            if ($response == $correctresponses[$key]) {
+                if ($correctresponses[$key] == "on") {
+                    $fraction++;
+                }
+            }
+        }
         return array($fraction, question_state::graded_state_for_fraction($fraction));
     }
 
