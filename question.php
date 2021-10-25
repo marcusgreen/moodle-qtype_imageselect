@@ -168,10 +168,10 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       * when a quiz containing this question starts.
       */
     public function get_correct_response() {
-       // $correctplaces = $this->get_correct_places($this->questiontext, $this->delimitchars);
-        return [];
-        $correctresponse['p1'] = 'on';
-        $correctresponse['p2'] = 'on';
+        $correctresponse = [];
+        foreach ($this->images as $image) {
+            $correctresponse[$image->no] = (float) $image->fraction > 0 ? 'on' : 'off';
+        }
         return $correctresponse;
     }
     /**
@@ -217,7 +217,18 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      * @return array (number, integer) the fraction, and the state.
      */
     public function grade_response(array $response) {
-        // TODO.
+        //return parent::grade_response($response);
+        // $fraction = 0;
+        // $correctresponses = $this->get_correct_response();
+        // foreach ($responses as $key => $response) {
+        //     if($response == $correctresponses[$key]) {
+        //         $fraction ++;
+        //     }
+        // }
+         //   return 1;
+        //return array($fraction, question_state::graded_state_for_fraction($fraction));
+        // $grade = array(1, question_state::graded_state_for_fraction(1));
+        // return $grade;
         $fraction = 0;
         return array($fraction, question_state::graded_state_for_fraction($fraction));
     }
