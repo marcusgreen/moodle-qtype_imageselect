@@ -15,12 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin administration pages are defined here.
+ * Data to control defaults when creating and running a question
  *
- * @package     
- * @category    
- * @copyright   
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    qtype_imageselect
+ * @copyright  2021 Marcus Green
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
+
+require_once($CFG->libdir . '/formslib.php');
+
+if ($ADMIN->fulltree) {
+    $penalties = [
+            1.0000000,
+            0.5000000,
+            0.3333333,
+            0.2500000,
+            0.2000000,
+            0.1000000,
+            0.0000000
+    ];
+
+    $penaltyoptions = [];
+    foreach ($penalties as $penalty) {
+        $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
+    }
+
+    $settings->add(new admin_setting_configselect('qtype_imageselect/penalty',
+            new lang_string('penalty', 'qtype_imageselect'),
+            new lang_string('imagepenalty_setting', 'qtype_imageselect'),
+            1, $penaltyoptions));
+}
+

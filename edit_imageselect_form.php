@@ -75,9 +75,6 @@ class qtype_imageselect_edit_form extends question_edit_form {
                 $question->imagelabel[$imageindex] = $image->label;
                 $question->fraction[$imageindex] = $image->fraction;
 
-                // MAVG
-                // $question->imageitem[$imageindex] = $image->id;
-
             }
         }
 
@@ -137,16 +134,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $mform->setType('questiontext', PARAM_RAW);
         $mform->addHelpButton('questiontext', 'questiontext', 'qtype_imageselect');
 
-        $menu = [
-            get_string('answersingleno', 'qtype_multichoice'),
-            get_string('answersingleyes', 'qtype_multichoice')
-        ];
-        $mform->addElement('select', 'single',
-                get_string('answerhowmany', 'qtype_multichoice'), $menu);
-        $mform->setDefault('single', $this->get_default_value('single',
-            get_config('qtype_multichoice', 'answerhowmany')));
-
-        list($itemrepeatsatstart, $imagerepeats) = $this->get_image_item_repeats();
+        list($itemrepeatsatstart, ) = $this->get_image_item_repeats();
         $this->definition_selectable_images($mform, $itemrepeatsatstart);
 
         $mform->removeelement('defaultmark');
@@ -154,6 +142,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question'), ['rows' => 10], $this->editoroptions);
         $mform->setType('generalfeedback', PARAM_RAW);
         $mform->addHelpButton('generalfeedback', 'generalfeedback', 'question');
+        $this->add_penalty($mform);
 
         // To add combined feedback (correct, partial and incorrect).
         $this->add_combined_feedback_fields(true);
@@ -161,6 +150,38 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->add_interactive_settings(true, true);
     }
 
+    /**
+     * Add penalty for incorrectly selected text items. This is a fraction that is
+     * multiplied by the number of correct responses. So if you select 2 correct
+     * and 2 incorrect the and the penalty is .5 the calculation is 2*.5 =1 (of the incorrect)
+     * then deduct 1 from the correct count of 2 giving  final result of 1
+     * @param object $mform
+     */
+    protected function add_penalty($mform) {
+        $config = get_config('qtype_imageselect');
+        $penalties = [
+            1.0000000,
+            0.5000000,
+            0.3333333,
+            0.2500000,
+            0.2000000,
+            0.1000000,
+            0.0000000
+        ];
+        if (!empty($this->question->penalty) && !in_array($this->question->penalty, $penalties)) {
+            $penalties[] = $this->question->penalty;
+            sort($penalties);
+        }
+
+        $penaltyoptions = array();
+        foreach ($penalties as $penalty) {
+            $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
+        }
+
+        $mform->addElement('select', 'imagepenalty', get_string('penalty', 'qtype_imageselect'), $penaltyoptions);
+        $mform->addHelpButton('imagepenalty', 'penalty', 'qtype_imageselect');
+        $mform->setDefault('penalty', $config->penalty);
+    }
     protected function definition_selectable_images($mform, $itemrepeatsatstart) {
         $this->repeat_elements($this->selectable_image($mform), $itemrepeatsatstart,
                 $this->selectable_image_repeated_options(),

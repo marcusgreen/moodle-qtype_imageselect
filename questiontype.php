@@ -53,15 +53,12 @@ class qtype_imageselect extends question_type {
      *
      * @return object
      */
-    // public function save_question($question, $form) {
-    // return parent::save_question($question, $form);
-    // }
+    public function save_question($question, $form) {
+        $form->defaultmark = array_count_values($form->fraction)[1];
+        return parent::save_question($question, $form);
+    }
 
     public function save_question_options($formdata) {
-        // TODO
-        // save question specific data (to extra question fields)
-        // \core_user\imageeditable\handler::process_formdata($usernew->userimage, $singleimageoptions);
-
         global $DB;
         $options = $DB->get_record('question_imageselect', ['questionid' => $formdata->id]);
         if (!$options) {

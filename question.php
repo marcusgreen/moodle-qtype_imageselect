@@ -181,17 +181,26 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      * @return array a cleaned up response with the wrong bits reset.
      */
     public function clear_wrong_from_response(array $response) {
-        foreach ($response as $key => $value) {
-            /*clear the wrong response/s*/
-        }
         return $response;
+    }
+
+    /**
+     *
+     * @param array $response Passed in from the runtime submission
+     * @return array
+     *
+     * Find count of correct answers, used for displaying marks
+     * for question. Compares answergiven with right/correct answer
+     */
+    public function get_num_parts_right(array $response) {
+            return [];
     }
 
     public function check_file_access($qa, $options, $component, $filearea,
             $args, $forcedownload) {
         if ('question' == $component && 'hint' == $filearea) {
             return $this->check_hint_file_access($qa, $options, $args);
-        }else if ($filearea == 'selectableimage') {
+        } else if ($filearea == 'selectableimage') {
             $validfilearea = true;
         } else {
             $validfilearea = false;
@@ -199,36 +208,15 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         if ($component == 'qtype_imageselect' && $validfilearea) {
 
             return true;
-            // else if ($filearea == 'dragimage') {
-            // foreach ($question->choices as $group) {
-            // foreach ($group as $drag) {
-            // if ($drag->id == $itemid) {
-            // return true;
-            // }
-            // }
-            // }
-            // return false;
+
         }
     }
-    // lib/editor/atto/yui/build/moodle-editor_atto-editor/moodle-editor_atto-editor.j
     /**
      * @param array $response responses, as returned by
-     *      {@link question_attempt_step::get_qt_data()}.
+     * {@link question_attempt_step::get_qt_data()}.
      * @return array (number, integer) the fraction, and the state.
      */
     public function grade_response(array $responses) {
-        //return parent::grade_response($response);
-        // $fraction = 0;
-        // $correctresponses = $this->get_correct_response();
-        // foreach ($responses as $key => $response) {
-        //     if($response == $correctresponses[$key]) {
-        //         $fraction ++;
-        //     }
-        // }
-         //   return 1;
-        //return array($fraction, question_state::graded_state_for_fraction($fraction));
-        // $grade = array(1, question_state::graded_state_for_fraction(1));
-        // return $grade;
         $correctresponses = $this->get_correct_response();
         $fraction = 0;
         foreach ($responses as $key => $response) {
@@ -244,7 +232,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      /**
       * Work out a final grade for this attempt, taking into account all the
       * tries the student made. Used in interactive behaviour once all
-      * hints have been used.     *
+      * hints have been used.
       * @param array $responses an array of arrays of the response for each try.
       * Each element of this array is a response array, as would be
       * passed to {@link grade_response()}. There may be between 1 and
@@ -256,19 +244,19 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       *
       */
     public function compute_final_grade($responses, $totaltries) {
-        $var = 1;
-        /*This method is typically where penalty is used.
-        When questions are run using the 'Interactive with multiple
-        tries or 'Adaptive mode' behaviour, so that the student will
-        have several tries to get the question right, then this option
-        controls how much they are penalised for each incorrect try.
+        $attemptcount = -1;
+        $fraction = 0;
+        $correctresponse = $this->get_correct_response();
+        $responses = reset($responses);
 
-        The penalty is a proportion of the total question grade, so if
-        the question is worth three marks, and the penalty is 0.3333333,
-        then the student will score 3 if they get the question right first
-        time, 2 if they get it right second try, and 1 of they get it right
-        on the third try.*/
-        // TODO
-        return 1;
+        foreach ($responses as $key => $response) {
+            $attemptcount++;
+            if ($response == $correctresponse[$key]) {
+                $fraction++;
+
+            }
+            return $fraction;
+        }
+
     }
 }
