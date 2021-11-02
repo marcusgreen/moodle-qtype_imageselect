@@ -39,14 +39,22 @@ require_once($CFG->dirroot . '/question/type/imageselect/question.php');
 class qtype_imageselect extends question_type {
     // ties additional table fields to the database
     public function extra_question_fields() {
-        // return array('question_imageselect','correctfeedback');
+        return array('question_imageselect', 'imagepenalty');
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
         // parent::move_files($questionid, $oldcontextid, $newcontextid);
         // $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
-
+    /**
+     * Called from within questiontypebase
+     *
+     * @param  string $hint
+     * @return question_hint_with_parts
+     */
+    protected function make_hint($hint) {
+        return question_hint_with_parts::load_from_record($hint);
+    }
     /**
      * @param stdClass $question
      * @param array    $form
@@ -69,8 +77,6 @@ class qtype_imageselect extends question_type {
             $options->partiallycorrectfeedback = '';
             $options->incorrectfeedback = '';
             $options->id = $DB->insert_record('question_imageselect', $options);
-        } else {
-            $options->single = $formdata->single;
         }
         $options = $this->save_combined_feedback_helper($options, $formdata, $formdata->context, true);
         $DB->update_record('question_imageselect', $options);
@@ -215,7 +221,6 @@ class qtype_imageselect extends question_type {
         $this->initialise_question_answers($question, $questiondata);
         $this->initialise_combined_feedback($question, $questiondata);
         $question->images = $questiondata->options->images;
-        $question->single = $questiondata->options->single;
 
     }
 }

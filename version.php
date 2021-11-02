@@ -27,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_imageselect';
-$plugin->version   = 2013012902;
+$plugin->version   = 2013012903;
 $plugin->requires  = 2012062504;
 
 $plugin->maturity  = MATURITY_ALPHA;

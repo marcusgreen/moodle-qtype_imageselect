@@ -167,7 +167,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
       * into the rightanswer field of the question_attempts table
       * when a quiz containing this question starts.
       */
-    public function get_correct_response() {
+    public function get_correct_response() : array {
         $correctresponse = [];
         foreach ($this->images as $image) {
             $correctresponse['p'.$image->no] = (float) $image->fraction > 0 ? 'on' : 'off';
@@ -229,6 +229,12 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         return array($fraction, question_state::graded_state_for_fraction($fraction));
     }
 
+    public function get_wrong_responsecount(array $correctresponse, array $responses) {
+        foreach ($responses as $response) {
+
+        }
+
+    }
      /**
       * Work out a final grade for this attempt, taking into account all the
       * tries the student made. Used in interactive behaviour once all
@@ -247,16 +253,16 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         $attemptcount = -1;
         $fraction = 0;
         $correctresponse = $this->get_correct_response();
-        $responses = reset($responses);
-
+        //$responses = reset($responses);
+        $imagecount = count($responses);
+        $imagepenalty = 1;
         foreach ($responses as $key => $response) {
             $attemptcount++;
             if ($response == $correctresponse[$key]) {
                 $fraction++;
 
             }
-            return $fraction;
         }
-
+        return $fraction;
     }
 }

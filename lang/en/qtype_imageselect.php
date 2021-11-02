@@ -54,11 +54,7 @@ $string['confirm'] = 'Confirm';
 $string['confirm'] = 'Confirm';
 
 $string['resolutionlow'] = 'For best quality, we recommend a larger image of at last 512px width.';
-$string['penalty'] = 'Penalty';
-$string['penalty_help'] = 'Penalty help';
+$string['imagepenalty'] = 'Penalty';
+$string['imagepenalty_help'] = 'Penalty help';
 $string['imagepenalty_setting'] = 'Imagepenalty setting';
-
-
-
-
-
+$string['markonecorrect'] = 'At least one image must be marked as a correct response';

@@ -77,7 +77,8 @@ class qtype_imageselect_edit_form extends question_edit_form {
 
             }
         }
-
+        /* populates the hints and adds clearincorrect and and shownumcorrect (true,true) */
+        $question = $this->data_preprocessing_hints($question, true, true);
         return $question;
     }
 
@@ -117,10 +118,23 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     public function validation($data, $files) {
-        for ($imageindex = 0; $imageindex < $data['noitems']; ++$imageindex) {
-            $label = $data['imagelabel'][$imageindex];
-        }
         $errors = parent::validation($data, $files);
+        $correctcount = 0;
+        for ($imageindex = 0; $imageindex < $data['noitems']; ++$imageindex) {
+             $fraction = (float) $data['fraction'][$imageindex];
+            if ($fraction > 0) {
+                $correctcount ++;
+            }
+
+        }
+        if ($correctcount == 0) {
+            $errors['questiontext'] = get_string('markonecorrect', 'qtype_imageselect');
+        }
+        if ($errors) {
+            return $errors;
+        } else {
+            return true;
+        }
     }
 
     public function qtype() {
@@ -159,7 +173,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
      */
     protected function add_penalty($mform) {
         $config = get_config('qtype_imageselect');
-        $penalties = [
+        $penalties = array(
             1.0000000,
             0.5000000,
             0.3333333,
@@ -167,20 +181,20 @@ class qtype_imageselect_edit_form extends question_edit_form {
             0.2000000,
             0.1000000,
             0.0000000
-        ];
-        if (!empty($this->question->penalty) && !in_array($this->question->penalty, $penalties)) {
-            $penalties[] = $this->question->penalty;
+        );
+        if (!empty($this->question->imagepenalty) && !in_array($this->question->imagepenalty, $penalties)) {
+            $penalties[] = $this->question->imagepenalty;
             sort($penalties);
         }
 
         $penaltyoptions = array();
-        foreach ($penalties as $penalty) {
-            $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
+        foreach ($penalties as $imagepenalty) {
+            $penaltyoptions["{$imagepenalty}"] = (100 * $imagepenalty) . '%';
         }
 
-        $mform->addElement('select', 'imagepenalty', get_string('penalty', 'qtype_imageselect'), $penaltyoptions);
-        $mform->addHelpButton('imagepenalty', 'penalty', 'qtype_imageselect');
-        $mform->setDefault('penalty', $config->penalty);
+        $mform->addElement('select', 'imagepenalty', get_string('imagepenalty', 'qtype_imageselect'), $penaltyoptions);
+        $mform->addHelpButton('imagepenalty', 'imagepenalty', 'qtype_imageselect');
+        $mform->setDefault('imagepenalty', $config->imagepenalty);
     }
     protected function definition_selectable_images($mform, $itemrepeatsatstart) {
         $this->repeat_elements($this->selectable_image($mform), $itemrepeatsatstart,

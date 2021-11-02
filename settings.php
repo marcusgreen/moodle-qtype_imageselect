@@ -42,7 +42,7 @@ if ($ADMIN->fulltree) {
         $penaltyoptions["{$penalty}"] = (100 * $penalty) . '%';
     }
 
-    $settings->add(new admin_setting_configselect('qtype_imageselect/penalty',
+    $settings->add(new admin_setting_configselect('qtype_imageselect/imagepenalty',
             new lang_string('penalty', 'qtype_imageselect'),
             new lang_string('imagepenalty_setting', 'qtype_imageselect'),
             1, $penaltyoptions));
