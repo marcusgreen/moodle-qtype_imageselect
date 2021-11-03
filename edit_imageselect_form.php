@@ -162,6 +162,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
         $this->add_combined_feedback_fields(true);
         // Adds hinting features.
         $this->add_interactive_settings(true, true);
+
     }
 
     /**

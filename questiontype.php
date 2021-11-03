@@ -159,6 +159,8 @@ class qtype_imageselect extends question_type {
             'no ASC',
             '*'
         );
+        parent::get_question_options($question);
+
     }
 
     /**

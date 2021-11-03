@@ -253,15 +253,24 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         $attemptcount = -1;
         $fraction = 0;
         $correctresponse = $this->get_correct_response();
-        //$responses = reset($responses);
         $imagecount = count($responses);
+        $wrongresponsecount = 0;
         $imagepenalty = 1;
-        foreach ($responses as $key => $response) {
-            $attemptcount++;
-            if ($response == $correctresponse[$key]) {
-                $fraction++;
-
+        $correctplacecount = array_count_values($correctresponse)["on"];
+        foreach ($responses as $response) {
+            foreach ($response as $key => $responseitem) {
+                $attemptcount++;
+                if ($responseitem == $correctresponse[$key] && ($responseitem == "on")) {
+                    $fraction++;
+                }
+                if (($responseitem == "on") && ($correctresponse[$key] == "off")) {
+                    $wrongresponsecount++;
+                }
             }
+            $penalty = $wrongresponsecount * $imagepenalty;
+            $fraction = @(($fraction - $penalty) / $correctplacecount);
+            $fraction = max(0, $fraction);
+
         }
         return $fraction;
     }
