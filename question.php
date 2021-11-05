@@ -174,6 +174,14 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         }
         return $correctresponse;
     }
+
+    public function is_correct_selection($imageno) : int {
+        $correctresponse = $this->get_correct_response();
+        if ($correctresponse['p'.$imageno] == 'on') {
+            return 1;
+        }
+        return 0;
+    }
     /**
      * Given a response, reset the parts that are wrong. Relevent in
      * interactive with multiple tries

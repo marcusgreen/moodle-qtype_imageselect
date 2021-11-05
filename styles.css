@@ -31,8 +31,24 @@
 
 }
 
-.fa-rotate-90:before {
-  content: "";
+.material-icons.md-18 {
+  font-size: 18px;color:
+  green
+}
+
+.qtype_imageselect .correct:before {
+    position: absolute;
+    top: -0.35em;
+    animation: slide-right-fade .25s forwards ease-out;
+    font-family: "Material Icons";
+    font-size: 2.8em;
+    content: "";
+    color: #6ea776;
+    background-color: #fff;
+    border-radius: 50%;
+    line-height: 1em;
+    box-shadow: 7px 7px 5px #00000065;
+    z-index: 1;
 }
 
 .imagehandler_wrapper .imagehandler {

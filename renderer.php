@@ -95,12 +95,24 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $image->classes[] = "selectableimage";
         $class = $isselected ? ' selected' : '';
 
+        $question = $qa->get_question();
+        $feedbackimage = '';
+        $iscorrect = false;
+        if ($isselected) {
+            $iscorrect = $question->is_correct_selection($image->no);
+            //$feedbackimage = $this->feedback_image($iscorrect);
+            $feedbackimage = $this->feedback_icon($iscorrect);
+
+        }
+
         $imageitem = '<div role="checkbox" name="selectableimage_p'.$image->no.'">';
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
        // $dimensions = ' width="100px" height="100px"';
         $dimensions = "";
-        $imageitem .= '<img  class="selectableimage'. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src="' . $fileurl .'" '.$dimensions. ' loading="lazy" >';
+        $imageitem .= '
 
+        <img  class="selectableimage'. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src="' . $fileurl .'" '.$dimensions. ' loading="lazy" >';
+        $imageitem .= $feedbackimage;
         $properties = [
             'type' => 'checkbox',
             'name' => $image->item,
@@ -129,7 +141,14 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $imageitem .= '</div>';
         return $imageitem;
     }
+    public function feedback_icon(int $iscorrect): string {
+       // return '<i class="material-icons md-18">check_circle</i>';
+        if ($iscorrect) {
+            return '<i class="fa fa-check-circle" aria-hidden="true" style="font-size:50px;color:green"></i>';
+        }
+        return '<i class="fa fa-times-circle" aria-hidden="true" style="font-size:50px;color:red"></i>';
 
+    }
     /**
      * Creates the name of the field/checkbox
      * that identifies the selectable item
@@ -151,6 +170,7 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
 
     public function correct_response(question_attempt $qa) {
         // TODO.
+        $x=1;
         return '';
     }
     /**
