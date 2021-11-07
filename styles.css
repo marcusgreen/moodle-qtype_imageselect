@@ -30,6 +30,19 @@
     cursor:pointer;
 
 }
+.qtype_imageselect .imagecontainer {
+  display: inline-block;
+  position: relative;
+}
+
+.qtype_imageselect .containerincorrect{
+    background-color: #ffe6e3;
+    border-color: #d33120;
+}
+.qtype_imageselect .containercorrect{
+  background-color: #edfff0;
+  border-color: #6ea776;
+}
 
 .qtype_imageselect .correct {
   position: absolute;

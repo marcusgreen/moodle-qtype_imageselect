@@ -98,18 +98,18 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $question = $qa->get_question();
         $feedbackimage = '';
         $iscorrect = false;
+        $containerclass = '';
         if ($isselected) {
             $iscorrect = $question->is_correct_selection($image->no);
             $feedbackimage = $this->feedback_icon($iscorrect);
-
+            $containerclass = $iscorrect ? 'containercorrect' : 'containerincorrect';
         }
 
         $imageitem = '<div role="checkbox" name="selectableimage_p'.$image->no.'">';
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
-        // $dimensions = ' width="100px" height="100px"';
         $dimensions = "";
         $imageitem .= '
-        <div style="display:inline-block;position: relative;">'.$feedbackimage
+        <div class = "imagecontainer '.$containerclass .'"  >'.$feedbackimage
         .'<img  class= "selectableimage'. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src="' . $fileurl .'" '.$dimensions. ' loading="lazy" >';
         $properties = [
             'type' => 'checkbox',
@@ -143,7 +143,6 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         if ($iscorrect) {
             return  '<i class="fa fa-check-circle correct" aria-hidden="true"></i>';
         }
-        //return "";
         return '<i class="fa fa-times-circle incorrect" aria-hidden="true"></i>';
     }
     /**
@@ -160,16 +159,7 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $inputname = $qprefix . 'p' . ($place);
         return $inputname;
     }
-    public function specific_feedback(question_attempt $qa) {
-        // TODO.
-        return '';
-    }
 
-    public function correct_response(question_attempt $qa) {
-        // TODO.
-        $x = 1;
-        return '';
-    }
     /**
      * Returns the URL for an image
      *
