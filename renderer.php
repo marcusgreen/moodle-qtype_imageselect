@@ -83,11 +83,11 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $output = html_writer::tag('div', $output, ['class' => 'qtext qtype_imageselect']);
         // $output .= '<script src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script>';
         // $output .= '<script>
-        //                 // debugger;
-        //                 // console.log("hello");
-        //                 // const observer = lozad();
-        //                 // observer.observe();
-        //              </script>';
+        // debugger;
+        // console.log("hello");
+        // const observer = lozad();
+        // observer.observe();
+        // </script>';
         return $output;
     }
     public function embedded_element(question_attempt $qa, $image,  question_display_options $options, $isselected) {
@@ -100,27 +100,25 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $iscorrect = false;
         if ($isselected) {
             $iscorrect = $question->is_correct_selection($image->no);
-            //$feedbackimage = $this->feedback_image($iscorrect);
             $feedbackimage = $this->feedback_icon($iscorrect);
 
         }
 
         $imageitem = '<div role="checkbox" name="selectableimage_p'.$image->no.'">';
         $fileurl = self::get_url_for_image($qa, 'selectableimage', $image->id);
-       // $dimensions = ' width="100px" height="100px"';
+        // $dimensions = ' width="100px" height="100px"';
         $dimensions = "";
         $imageitem .= '
-
-        <img  class="selectableimage'. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src="' . $fileurl .'" '.$dimensions. ' loading="lazy" >';
-        $imageitem .= $feedbackimage;
+        <div style="display:inline-block;position: relative;">'.$feedbackimage
+        .'<img  class= "selectableimage'. $class .'"  name="'.$image->item.'" id="selectableimage-'.$image->item.'" src="' . $fileurl .'" '.$dimensions. ' loading="lazy" >';
         $properties = [
             'type' => 'checkbox',
             'name' => $image->item,
             'id' => 'imagecheck_p'.$image->no,
             'class' => 'selcheck '. $isselected ? 'selected' : '',
-            'role' => 'checkbox'
+            'role' => 'checkbox',
+            'hidden' => 'true'
         ];
-
 
         if ($isselected) {
              $properties['checked'] = 'true';
@@ -138,16 +136,15 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
         $imageitem .= $hidden;
 
         $imageitem .= $checkbox;
-        $imageitem .= '</div>';
+        $imageitem .= '</span></div>';
         return $imageitem;
     }
     public function feedback_icon(int $iscorrect): string {
-       // return '<i class="material-icons md-18">check_circle</i>';
         if ($iscorrect) {
-            return '<i class="fa fa-check-circle" aria-hidden="true" style="font-size:50px;color:green"></i>';
+            return  '<i class="fa fa-check-circle correct" aria-hidden="true"></i>';
         }
-        return '<i class="fa fa-times-circle" aria-hidden="true" style="font-size:50px;color:red"></i>';
-
+        //return "";
+        return '<i class="fa fa-times-circle incorrect" aria-hidden="true"></i>';
     }
     /**
      * Creates the name of the field/checkbox
@@ -170,7 +167,7 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
 
     public function correct_response(question_attempt $qa) {
         // TODO.
-        $x=1;
+        $x = 1;
         return '';
     }
     /**
