@@ -141,9 +141,9 @@ class qtype_imageselect_renderer extends qtype_with_combined_feedback_renderer {
     }
     public function feedback_icon(int $iscorrect): string {
         if ($iscorrect) {
-            return  '<i class="fa fa-check-circle correct" aria-hidden="true"></i>';
+            return  '<i  title="'.get_string("correctresponse", "qtype_imageselect").'" class="fa fa-check-circle correct" aria-hidden="true"></i>';
         }
-        return '<i class="fa fa-times-circle incorrect" aria-hidden="true"></i>';
+        return '<i title="'.get_string("incorrectresponse", "qtype_imageselect").'" class="fa fa-times-circle incorrect" aria-hidden="true"></i>';
     }
     /**
      * Creates the name of the field/checkbox

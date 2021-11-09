@@ -47,6 +47,16 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
      * text where choices can be put. Places are numbered from 1.
      */
     public $images = [];
+
+    /**
+     * Fraction to deduct for each incorrectly selected image
+     * Wrong response is multiplied by this, i.e. 2 wrong responses
+     * and imagepenalty of .5 means 1 penalty, default is 1, i.e. no
+     * change 1*1=1
+     * @var float
+     */
+    public $imagepenalty = 1.0;
+
     /**
      * get expected data types
      *
@@ -237,12 +247,6 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         return array($fraction, question_state::graded_state_for_fraction($fraction));
     }
 
-    public function get_wrong_responsecount(array $correctresponse, array $responses) {
-        foreach ($responses as $response) {
-
-        }
-
-    }
      /**
       * Work out a final grade for this attempt, taking into account all the
       * tries the student made. Used in interactive behaviour once all
@@ -261,9 +265,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
         $attemptcount = -1;
         $fraction = 0;
         $correctresponse = $this->get_correct_response();
-        $imagecount = count($responses);
         $wrongresponsecount = 0;
-        $imagepenalty = 1;
         $correctplacecount = array_count_values($correctresponse)["on"];
         foreach ($responses as $response) {
             foreach ($response as $key => $responseitem) {
@@ -275,7 +277,7 @@ class qtype_imageselect_question extends question_graded_automatically_with_coun
                     $wrongresponsecount++;
                 }
             }
-            $penalty = $wrongresponsecount * $imagepenalty;
+            $penalty = $wrongresponsecount * $this->imagepenalty;
             $fraction = @(($fraction - $penalty) / $correctplacecount);
             $fraction = max(0, $fraction);
 

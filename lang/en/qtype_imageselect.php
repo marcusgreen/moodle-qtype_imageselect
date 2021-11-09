@@ -58,3 +58,5 @@ $string['imagepenalty'] = 'Penalty';
 $string['imagepenalty_help'] = 'Penalty help';
 $string['imagepenalty_setting'] = 'Imagepenalty setting';
 $string['markonecorrect'] = 'At least one image must be marked as a correct response';
+$string['correctresponse'] = 'Correct response';
+$string['incorrectresponse'] = 'Incorrect response';
