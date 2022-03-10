@@ -149,6 +149,6 @@ class image_editable implements templatable, renderable {
      * @return string
      */
     public function render(\renderer_base $output): string {
-        return $output->render_from_template('qtype_imageselect/image_editable', $this->export_for_template($output));
+        return $output->render_from_template('qtype_imageselect/darkroom_edit', $this->export_for_template($output));
     }
 }

@@ -142,6 +142,37 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     protected function definition_inner($mform) {
+        global $PAGE;
+
+        // $html = '
+        // <link
+        //     rel="stylesheet"
+        //     href="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.css"
+        // />
+        // <script src="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.js"></script>
+        // ';
+
+        // <div class="figure-wrapper">
+        //         <figure class="image-container target">
+        //              <img src="http://localhost/mdl311/toaster.png" alt="DomoKun" id="target">
+        //         </figure>
+        //         </div>';
+        $mform->addElement('html', $html);
+
+
+        $html = '
+        <div id="tui-image-editor"></div>
+        <canvas id="c" width="300" height="180"></canvas>
+        <!-- We can create buttons to manipulate an object in the canvas -->
+        <input id="buttonR" type="button" value="Shift Right">
+        <input id="buttonL" type="button" value="Shift Left">
+        <input id="sepia" type="button" value="Sepia-fy">
+        <input id="rotate" type="button" value="Rotate Current Object">';
+
+        // $mform->addElement('html', $html);
+
+        $PAGE->requires->js_call_amd('qtype_imageselect/fabric_edit', 'init');
+
         $mform->removeelement('questiontext');
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
         $this->editoroptions);
