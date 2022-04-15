@@ -212,14 +212,16 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     protected function selectable_image($mform) {
+        global $USER;
         $selectableimageitem = [];
+        $context = context_user::instance($USER->id, IGNORE_MISSING);
 
          $singleimageoptions = [
             'maxbytes' => 100,
             'component' => 'qtype_imageselect',
             'filearea' => 'selectableimage',
             'currentimage' => '',
-            'contextid' => 25,
+            'contextid' => $context->id,
             'size' => 1000
          ];
 

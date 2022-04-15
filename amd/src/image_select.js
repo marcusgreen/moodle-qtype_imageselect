@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   qtype_imageselect
  * @copyright 2021 Marcus Green
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,6 +38,12 @@ export const init = (isSingle) => {
       }
 
     });
+    /**
+     *
+     * @param {*} el
+     * @param {*} clickables
+     * @param {*} id
+     */
     function clearStyle(el,clickables, id) {
       clickables.forEach(item => {
         if (item.id !== id) {
