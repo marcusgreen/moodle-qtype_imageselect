@@ -235,7 +235,8 @@
          viewport: {
              width: (size / 100) * (90),
              height: (size / 100) * (90),
-             type: 'square'
+             type: 'square',
+             enableResize: true,
          },
 
      });
@@ -305,6 +306,8 @@
              height: (size / 100) * (100),
              boundary:{width:300, height:300},
              type: 'square',
+             enableResize: true
+
          },
          enableOrientation: true,
          showZoomer: false,
