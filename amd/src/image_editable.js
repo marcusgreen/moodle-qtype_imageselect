@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package   image_editable
  * @copyright 2021 Bas Brands
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
  import Ajax from 'core/ajax';
- import Croppie from 'qtype_imageselect/croppie';
+ import Croppie from 'qtype_imageselect/cropper';
  import {get_string as getString} from 'core/str';
  import Templates from 'core/templates';
  import Notification from 'core/notification';
@@ -153,6 +152,7 @@
   * @return {Promise} Resolved with an array file the stored file url.
   */
  const updateImage = args => {
+     debugger;
      const request = {
          methodname: 'qtype_imageselect_imageeditable_update_image',
          args: args

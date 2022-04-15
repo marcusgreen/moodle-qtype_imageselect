@@ -65,7 +65,7 @@ class MoodleQuickForm_singleimage extends MoodleQuickForm_filepicker {
     public function toHtml(): string {
         global $OUTPUT;
 
-            $id     = $this->_attributes['id'];
+        $id     = $this->_attributes['id'];
         $elname = $this->_attributes['name'];
 
         if ($this->_flagFrozen) {
