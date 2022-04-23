@@ -54,21 +54,19 @@
      data-rounded="{{#rounded}}rounded{{/rounded}}"
      data-draftitemid="{{draftitemid}}"
 >
-    <div {{#formelements}}id="singleimage_{{ id }}"{{/formelements}} class="imagehandler {{#rounded}}round{{/rounded}} {{classes}} "
-        data-region="imagehandler"
-        {{#currentimage}}
-            style="background-image: url('{{{currentimage}}}'); {{#size}} width: {{size}}px; height: {{size}}px;{{/size}}"
-        {{/currentimage}}
-        {{^currentimage}}
-            style="background-image: url('{{{defaultimage}}}'); {{#size}}width: {{size}}px; height: {{size}}px;{{/size}}"
-        {{/currentimage}}
-        >
-        <img singleimage_1 data-region="imagehandler"  src='{{{currentimage}}}'' ><h1>XHello</h1>
+<div>
+{{#currentimage}}
+<img {{#formelements}}id="singleimage_{{ id }}"{{/formelements}} class="imagehandler {{#rounded}}round{{/rounded}} {{classes}} "
+data-region="imagehandler"
+    src='{{{currentimage}}}'{{#size}} width="{{size}}px;" height="{{size}}px;" {{/size}} />
+{{/currentimage}}
+
         <div data-region="imagecontrols" class="uploadimagecontrols p-2">
             <div data-region="editactions" class="w-100">
                 <div class="d-flex" >
                     <label data-region="uploadinputlabel" id="uploadbutton" tabindex="0" class="btn btn-sm btn-secondary icon-no-margin mb-0" for="imagehandler-coverfiles-{{uniqid}}">
-                       <input data-action="uploadimage" tabindex="-1" id="imagehandler-coverfiles-{{uniqid}}" name="uploadimage" type="file"  class="sr-only " accept="image/jpeg,image/gif,image/png"/>
+                        <i class="icon fa fa-upload" title="{{#str}}rotateimageleft, qtype_imageselect {{/str}}" aria-label="{{# str }}rotateimageleft, qtype_imageselect {{/ str }}"></i>
+                       <input data-action="uploadimage" tabindex="-1" id="imagehandler-coverfiles-{{uniqid}}" name="uploadimage" type="file"  class="sr-only " accept="image/jpeg,image/gif,image/png" />
                     </label>
                     <button data-action="rotateleft" class="btn btn-sm btn-secondary ml-auto icon-no-margin">
                         <i class="icon fa fa-rotate-left" title="{{#str}}rotateimageleft, qtype_imageselect {{/str}}" aria-label="{{# str }}rotateimageleft, qtype_imageselect {{/ str }}"></i>
@@ -97,7 +95,7 @@
         </div>
     </div>
     <div class="d-flex" style="max-width: {{size}}px;">
-        <button class="btn btn-sm btn-success mr-1" data-action="deleteimage">
+        <button data-action="deleteimage" class="btn btn-sm btn-success mr-1">
             {{#str}}deleteimage, qtype_imageselect{{/str}}
         </button>
 

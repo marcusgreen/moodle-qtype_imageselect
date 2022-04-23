@@ -19,7 +19,7 @@
  */
 
  import Ajax from 'core/ajax';
- import Croppie from 'qtype_imageselect/cropper';
+ import Cropper from 'qtype_imageselect/cropper';
  import {get_string as getString} from 'core/str';
  import Templates from 'core/templates';
  import Notification from 'core/notification';
@@ -152,7 +152,6 @@
   * @return {Promise} Resolved with an array file the stored file url.
   */
  const updateImage = args => {
-     debugger;
      const request = {
          methodname: 'qtype_imageselect_imageeditable_update_image',
          args: args
@@ -293,13 +292,22 @@
          showEditActions(target);
      });
  };
- const imageRotator = (target, orientation) => {
+ const imageRotator = (target, angle) => {
      const imageHandler = target.querySelector(selectors.regions.imagehandler);
-
+     /*eslint-disable-next-line*/
+     debugger;
      let currentImage = target.getAttribute('data-currentimage');
      const size = target.getAttribute('data-size');
+     var image = document.getElementById('singleimage_id_imageitem_0');
 
-     const croppedImage = new Croppie(imageHandler, {
+     new Cropper(image, {
+        ready() {
+          this.cropper.rotate(angle);
+        },
+      });
+
+     return;
+     const croppedImage = new Cropper(imageHandler, {
          enableExif: true,
          viewport: {
              width: (size / 100) * (100),
@@ -505,24 +513,23 @@
      const cropimage = target.querySelector(selectors.actions.cropimage);
      const rotateleft = target.querySelector(selectors.actions.rotateleft);
      const rotateright = target.querySelector(selectors.actions.rotateright);
-
      const uploadimage = target.querySelector(selectors.actions.uploadimage);
      const deleteimage = target.querySelector(selectors.actions.deleteimage);
      const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
 
      // Actions on cropping
      cropimage.addEventListener('click', e => {
-         imageCropper(target);
-         e.preventDefault();
+        // imageCropper(target);
+        e.preventDefault();
      });
      // Actions on rotateleft
      rotateleft.addEventListener('click', e => {
-         imageRotator(target, 8);
+         imageRotator(target, -20);
          e.preventDefault();
      });
      // Actions on rotateleft
      rotateright.addEventListener('click', e => {
-         imageRotator(target, 6);
+         imageRotator(target, 20);
          e.preventDefault();
      });
 
@@ -534,7 +541,7 @@
 
      // Delete the shown image.
      deleteimage.addEventListener('click', e => {
-         imageDelete(target);
+        //  imageDelete(target);
          e.preventDefault();
      });
 
