@@ -55,7 +55,7 @@
  /**
   * Get human file size from bytes.
   *
-  * @param {Int} size
+  * @param {integer} size
   * @returns {string} the human readable size string
   */
   export const humanFileSize = size => {
@@ -224,7 +224,7 @@
   * @param {HTMLElement} target DOM node of the editable image wrapper.
   */
  const imageCropper = target => {
-     const imageHandler = target.querySelector(selectors.regions.imagehandler);
+     const imageHandler = target.querySelector(selectors_regions.imagehandler);
 
      let currentImage = target.getAttribute('data-currentimage');
 
@@ -294,17 +294,18 @@
  };
  const imageRotator = (target, angle) => {
      const imageHandler = target.querySelector(selectors.regions.imagehandler);
-     /*eslint-disable-next-line*/
-     debugger;
+     /* eslint-disable-next-line*/
      let currentImage = target.getAttribute('data-currentimage');
      const size = target.getAttribute('data-size');
      var image = document.getElementById('singleimage_id_imageitem_0');
-
+//this.cropper.rotate(90).getImageData().rotate.to.equal(90);
      new Cropper(image, {
         ready() {
-          this.cropper.rotate(angle);
+          //this.cropper.rotate(angle);
+          this.cropper.rotate(angle).getImageData().rotate.to.equal(angle);
         },
       });
+
 
      return;
      const croppedImage = new Cropper(imageHandler, {
@@ -517,9 +518,11 @@
      const deleteimage = target.querySelector(selectors.actions.deleteimage);
      const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
 
-     // Actions on cropping
+
+
+  //   Actions on cropping
      cropimage.addEventListener('click', e => {
-        // imageCropper(target);
+        imageCropper(target);
         e.preventDefault();
      });
      // Actions on rotateleft
@@ -527,7 +530,7 @@
          imageRotator(target, -20);
          e.preventDefault();
      });
-     // Actions on rotateleft
+     // Actions on rotateright
      rotateright.addEventListener('click', e => {
          imageRotator(target, 20);
          e.preventDefault();
