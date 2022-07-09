@@ -298,11 +298,25 @@
      let currentImage = target.getAttribute('data-currentimage');
      const size = target.getAttribute('data-size');
      var image = document.getElementById('singleimage_id_imageitem_0');
-     new Cropper(image, {
-        ready() {
-          this.cropper.rotate(angle).getImageData().rotate.to.equal(angle);
-        },
+//this.cropper.rotate(90).getImageData().rotate.to.equal(90);
+    var mycropper =  new Cropper(image, {
+        aspectRatio: 1 / 1,
+        minCropBoxHeight: 250,
+        minCropBoxWidth: 250,
+        rotatable:true
+        // ready() {
+        //   //this.cropper.rotate(angle);
+        //   this.cropper.rotate(angle).getImageData().rotate.to.equal(angle);
+        // },
       });
+      mycropper.rotate(angle);
+    // var cropper = new Cropper(image, {
+    //     aspectRatio: 1 / 1,
+    //     minCropBoxHeight: 250,
+    //     minCropBoxWidth: 250,
+    //     rotatable:true,
+    // });
+    // cropper.rotate(angle).getImageData().rotate.to.equal(angle);
 
 
      return;
