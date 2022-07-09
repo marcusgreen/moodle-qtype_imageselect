@@ -298,10 +298,8 @@
      let currentImage = target.getAttribute('data-currentimage');
      const size = target.getAttribute('data-size');
      var image = document.getElementById('singleimage_id_imageitem_0');
-//this.cropper.rotate(90).getImageData().rotate.to.equal(90);
      new Cropper(image, {
         ready() {
-          //this.cropper.rotate(angle);
           this.cropper.rotate(angle).getImageData().rotate.to.equal(angle);
         },
       });
