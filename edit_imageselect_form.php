@@ -142,6 +142,7 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     protected function definition_inner($mform) {
+        $mform->addElement('html', '<a href=./type/imageselect/test.html>Test file</a>');
         $mform->removeelement('questiontext');
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
         $this->editoroptions);

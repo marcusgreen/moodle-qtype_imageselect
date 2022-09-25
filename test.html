@@ -1,96 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Cropper.js</title>
-  <link rel="stylesheet" href="cropper.css">
-  <style>
-    .container {
-      margin: 20px auto;
-      max-width: 640px;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      crossorigin="anonymous"
+    />
 
-    img {
-      max-width: 100%;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Cropper.js</title>
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.js"
+  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
 
-    .cropper-view-box,
-    .cropper-face {
-      /* border-radius: 50%; */
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Crop a round image</h1>
-    <h3>Image</h3>
-    <div>
-      <img id="image" src="tests/fixtures/boyface.png" alt="Picture">
-    </div>
-    <h3>Result</h3>
-    <p>
-      <button type="button" id="button">Crop</button>
-    </p>
-    <div id="result"></div>
-  </div>
-  <script src="amd/build/cropper.min.js"></script>
-  <script>
-    function getRoundedCanvas(sourceCanvas) {
-      var canvas = document.createElement('canvas');
-      var context = canvas.getContext('2d');
-      var width = sourceCanvas.width;
-      var height = sourceCanvas.height;
 
-      canvas.width = width;
-      canvas.height = height;
-      context.imageSmoothingEnabled = true;
-      context.drawImage(sourceCanvas, 0, 0, width, height);
-      context.globalCompositeOperation = 'destination-in';
-      context.beginPath();
-      context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
-      context.fill();
-      return canvas;
-    }
-    debugger;
-    window.addEventListener('DOMContentLoaded', function () {
-      var image = document.getElementById('image');
-      var button = document.getElementById('button');
-    //   var result = document.getElementById('result');
-      var croppable = false;
-      var cropper = new Cropper(image, {
-        aspectRatio: 1 / 1,
-        minCropBoxHeight: 250,
-        minCropBoxWidth: 250,
-        rotatable:true,
+    <link rel="stylesheet" href="cropper.css" />
+    <style>
+      .container {
+        margin: 20px auto;
+        max-width: 640px;
+      }
+      img {
+        display: block;
+
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- https://www.jquerypost.com/a-plugin-of-jquery-for-image-cropping-cropper-js/ -->
+    <div class="container">
+      <h1>Crop and Rotate and Image</h1>
+      <div>
+        <img id="image" src="tests/fixtures/boyface.png" alt="Picture" />
+      </div>
+
+      <div>
+        <button type="button" id="btn_crop">Crop</button>
+
+        <button type="button" id="btn_rotate_left">Rotate Left
+          <i id="btn-rotate_left" class="icon fa fa-rotate-left" title="Rotate left" aria-label="Rotate left"></i>
+        </button>
+        <button type="button" id="btn_rotate_right">Rotate Right
+          <i  class="icon fa fa-rotate-right" title="Rotate right" aria-label="Rotate Right"></i>
+        </button>
+
+        <button type="button" id="btn_reset">Reset
+          <i  class="icon fa fa-refresh" title="Reset" aria-label="Reset"></i>
+        </button>
+      </div>
+
+    <script src="amd/build/cropper.min.js"></script>
+    <script>
+
+// function hexToRgb(hex) {
+//   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+//   return result ? {
+//     r: parseInt(result[1], 16),
+//     g: parseInt(result[2], 16),
+//     b: parseInt(result[3], 16)
+//   } : null;
+// }
+// result = hexToRgb("#008000");
+
+function hexToRgb(hex){
+  var red = parseInt(hex[1]+hex[2],16);
+  var green = parseInt(hex[3]+hex[4],16);
+  var blue = parseInt(hex[5]+hex[6],16);
+  return 'rgb('+red+' ,'+green+' ,'+blue+')';
+}
+debugger;
+$rgb = hexToRgb("#ff64c8");
+// var hex = "#ff64c8";
+// var red = parseInt(hex[1]+hex[2],16);
+// var green = parseInt(hex[3]+hex[4],16);
+// var blue = parseInt(hex[5]+hex[6],16);
+// console.log(red,green,blue);
+      const image = document.getElementById("image");
+
+      const  cropper = new Cropper(image, {
+        aspectRatio: 1,
+        viewMode: 1,
         ready: function () {
           croppable = true;
+
         },
       });
 
-      button.onclick = function () {
-        var croppedCanvas;
-        var roundedCanvas;
-        var roundedImage;
+      var rotation = 0;
 
-        if (!croppable) {
-          return;
-        }
 
-        // Crop
-        croppedCanvas = cropper.getCroppedCanvas();
+      var crop = document.getElementById("btn_crop").addEventListener("click",function() {
+        debugger;
 
-        // Round
-        roundedCanvas = getRoundedCanvas(croppedCanvas);
+         canvas = cropper.getCroppedCanvas();
+         var data = cropper.getData();
 
-        // Show
-        roundedImage = document.createElement('img');
-        roundedImage.src = roundedCanvas.toDataURL()
-        result.innerHTML = '';
-        result.appendChild(roundedImage);
-      };
-    });
-  </script>
-</body>
+
+        cropper.replace(canvas.toDataURL(),data);
+        // var data = cropper.getData();
+
+
+        cropper.crop().setData(cropper.getData())
+              .setCanvasData(data)
+              .setCropBoxData(data);
+
+              cropper.clear();
+
+
+        // cropper.croppable = false;
+      //  cropper.setCropBoxData({"left":0,"right":0,"width":0,"height":0});
+
+
+
+        // cropper.setCropBoxData({
+        //   left: cropBoxData.left + 100,
+        //   height: cropBoxData.height - 100,
+        // });
+
+        // cropper.setData({
+        //       width: image.width,
+        //       height: image.height
+        //     });
+
+        // cropper.setData({
+        //   width: canvas.width,
+        //   height: canvas.height
+        // });
+
+
+      // debugger;
+      //        cropper.crop()
+      //         .setData(cropper.getData())
+      //         .setCanvasData(cropper.getCanvasData())
+      //         .setCropBoxData(cropper.getCropBoxData());
+
+      //cropper.replace(canvas.toDataURL(),data)
+
+
+
+      });
+
+      var btnReset = document.getElementById("btn_reset").addEventListener("click",function(){
+        cropper.reset();
+      });
+      var btnLeft = document.getElementById("btn_rotate_left").addEventListener("click",function(){
+        rotation =-90;
+        cropper.rotate(rotation);
+      });
+
+      var btnRight = document.getElementById("btn_rotate_right").addEventListener("click",function(){
+        rotation =90;
+        cropper.rotate(rotation);
+      });
+
+    </script>
+
+
+  </body>
 </html>
