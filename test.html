@@ -37,13 +37,16 @@
   <body>
     <!-- https://www.jquerypost.com/a-plugin-of-jquery-for-image-cropping-cropper-js/ -->
     <div class="container">
-      <h1>Crop and Rotate and Image</h1>
+      <h1>Crop and Rotate an Image: This <a href=https://fengyuanchen.github.io/photo-editor>https://fengyuanchen.github.io/photo-editor</a> without vue</h1>
+      <h2> Source at <a href="https://github.com/fengyuanchen/photo-editor">https://github.com/fengyuanchen/photo-editor</a></h2>
       <div>
         <img id="image" src="tests/fixtures/boyface.png" alt="Picture" />
       </div>
 
       <div>
-        <button type="button" id="btn_crop">Crop</button>
+        <button type="button" id="btn_crop">Crop
+          <i id="btn-crop" class="icon fa fa-crop" title="Crop" aria-label="Crop"></i>
+        </button>
 
         <button type="button" id="btn_rotate_left">Rotate Left
           <i id="btn-rotate_left" class="icon fa fa-rotate-left" title="Rotate left" aria-label="Rotate left"></i>
@@ -60,92 +63,27 @@
     <script src="amd/build/cropper.min.js"></script>
     <script>
 
-// function hexToRgb(hex) {
-//   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-//   return result ? {
-//     r: parseInt(result[1], 16),
-//     g: parseInt(result[2], 16),
-//     b: parseInt(result[3], 16)
-//   } : null;
-// }
-// result = hexToRgb("#008000");
 
-function hexToRgb(hex){
-  var red = parseInt(hex[1]+hex[2],16);
-  var green = parseInt(hex[3]+hex[4],16);
-  var blue = parseInt(hex[5]+hex[6],16);
-  return 'rgb('+red+' ,'+green+' ,'+blue+')';
-}
 debugger;
-$rgb = hexToRgb("#ff64c8");
-// var hex = "#ff64c8";
-// var red = parseInt(hex[1]+hex[2],16);
-// var green = parseInt(hex[3]+hex[4],16);
-// var blue = parseInt(hex[5]+hex[6],16);
-// console.log(red,green,blue);
-      const image = document.getElementById("image");
 
+      const image = document.getElementById("image");
       const  cropper = new Cropper(image, {
         aspectRatio: 1,
         viewMode: 1,
         ready: function () {
           croppable = true;
+          zommable = false;
 
         },
       });
 
       var rotation = 0;
 
-
       var crop = document.getElementById("btn_crop").addEventListener("click",function() {
-        debugger;
-
          canvas = cropper.getCroppedCanvas();
          var data = cropper.getData();
-
-
-        cropper.replace(canvas.toDataURL(),data);
-        // var data = cropper.getData();
-
-
-        cropper.crop().setData(cropper.getData())
-              .setCanvasData(data)
-              .setCropBoxData(data);
-
-              cropper.clear();
-
-
-        // cropper.croppable = false;
-      //  cropper.setCropBoxData({"left":0,"right":0,"width":0,"height":0});
-
-
-
-        // cropper.setCropBoxData({
-        //   left: cropBoxData.left + 100,
-        //   height: cropBoxData.height - 100,
-        // });
-
-        // cropper.setData({
-        //       width: image.width,
-        //       height: image.height
-        //     });
-
-        // cropper.setData({
-        //   width: canvas.width,
-        //   height: canvas.height
-        // });
-
-
-      // debugger;
-      //        cropper.crop()
-      //         .setData(cropper.getData())
-      //         .setCanvasData(cropper.getCanvasData())
-      //         .setCropBoxData(cropper.getCropBoxData());
-
-      //cropper.replace(canvas.toDataURL(),data)
-
-
-
+         cropper.replace(canvas.toDataURL(),data);
+         cropper.clear();
       });
 
       var btnReset = document.getElementById("btn_reset").addEventListener("click",function(){
