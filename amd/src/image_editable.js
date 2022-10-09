@@ -24,21 +24,6 @@
  import Templates from 'core/templates';
  import Notification from 'core/notification';
 
-var image = document.getElementById("singleimage_id_imageitem_0");
-var cropper = new Cropper(image, {
-    autoCrop: true,
-    zoomable: true,
-    autoCropArea: 80
-
-});
-var canvas;
-// window.onload=()=>{
-//     canvas = cropper.getCroppedCanvas();
-//     var data = cropper.getData();
-//     cropper.replace(canvas.toDataURL(), data);
-//     cropper.rotate(20);
-// };
-
  const selectors = {
      actions: {
          confirm: '[data-action="confirm"]',
@@ -466,21 +451,28 @@ var canvas;
      const deleteimage = target.querySelector(selectors.actions.deleteimage);
      const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
 
+     var image = document.getElementById("singleimage_id_imageitem_0");
+    var cropper = new Cropper(image, {
+        autoCrop: true,
+        zoomable: false,
+        viewMode: 2
+    });
 
   //   Actions on cropping
      cropimage.addEventListener('click', e => {
-        imageCropper(target);
+        var canvas = cropper.getCroppedCanvas();
+        cropper.replace(canvas.toDataURL(), true);
+        cropper.clear();
         e.preventDefault();
      });
      // Actions on rotateleft
      rotateleft.addEventListener('click', e => {
-         imageRotator(target, -20);
+        cropper.rotate(-45);
          e.preventDefault();
      });
      // Actions on rotateright
      rotateright.addEventListener('click', e => {
-        //broken
-         imageRotator(target, 20);
+        cropper.rotate(90);
          e.preventDefault();
      });
 
