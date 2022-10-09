@@ -24,6 +24,21 @@
  import Templates from 'core/templates';
  import Notification from 'core/notification';
 
+var image = document.getElementById("singleimage_id_imageitem_0");
+var cropper = new Cropper(image, {
+    autoCrop: true,
+    zoomable: true,
+    autoCropArea: 80
+
+});
+var canvas;
+// window.onload=()=>{
+//     canvas = cropper.getCroppedCanvas();
+//     var data = cropper.getData();
+//     cropper.replace(canvas.toDataURL(), data);
+//     cropper.rotate(20);
+// };
+
  const selectors = {
      actions: {
          confirm: '[data-action="confirm"]',
@@ -55,7 +70,7 @@
  /**
   * Get human file size from bytes.
   *
-  * @param {Int} size
+  * @param {integer} size
   * @returns {string} the human readable size string
   */
   export const humanFileSize = size => {
@@ -169,8 +184,9 @@
   * @param {String} imageUrl the new background image url or data.
   */
  const setBackgroundImage = (imageHandler, imageUrl) => {
+    debugger;
      imageHandler.style.backgroundImage = 'url("' + imageUrl + '")';
- };
+    };
 
  /**
   * Show the confirm actions, this hides the edit actions.
@@ -224,13 +240,13 @@
   * @param {HTMLElement} target DOM node of the editable image wrapper.
   */
  const imageCropper = target => {
-     const imageHandler = target.querySelector(selectors.regions.imagehandler);
+     const imageHandler = target.querySelector(selectors_regions.imagehandler);
 
      let currentImage = target.getAttribute('data-currentimage');
 
      const size = target.getAttribute('data-size');
 
-     const croppedImage = new Croppie(imageHandler, {
+     const croppedImage = new Cropper(imageHandler, {
          enableExif: true,
          viewport: {
              width: (size / 100) * (90),
@@ -245,15 +261,6 @@
 
      setBackgroundImage(imageHandler, '');
 
-     const zoomslider = target.querySelector(selectors.regions.zoomslider);
-     zoomslider.classList.add('form-control-range');
-     // Increase the slider step size so it is keyboard accessible.
-     zoomslider.setAttribute('step', 0.01);
-
-     // Makes the viewport look like a circle
-     if (target.getAttribute('data-rounded') === 'rounded') {
-         target.querySelector('.cr-viewport').classList.add('cr-vp-circle');
-     }
 
      confirmAction(target, getString('cropimage', 'qtype_imageselect'), () => {
          croppedImage.result('base64').then(imageData => {
@@ -293,75 +300,17 @@
      });
  };
  const imageRotator = (target, angle) => {
-     const imageHandler = target.querySelector(selectors.regions.imagehandler);
-     /*eslint-disable-next-line*/
-     debugger;
-     let currentImage = target.getAttribute('data-currentimage');
-     const size = target.getAttribute('data-size');
-     var image = document.getElementById('singleimage_id_imageitem_0');
+     /* eslint-disable-next-line*/
+    var image = document.getElementById('singleimage_id_imageitem_0');
+     const cropper = new Cropper(image, {
+        autoCrop: false,
+        zoomable: false,
 
-     new Cropper(image, {
-        ready() {
-          this.cropper.rotate(angle);
-        },
-      });
+    });
+    cropper.rotate(angle);
 
-     return;
-     const croppedImage = new Cropper(imageHandler, {
-         enableExif: true,
-         viewport: {
-             width: (size / 100) * (100),
-             height: (size / 100) * (100),
-             boundary:{width:300, height:300},
-             type: 'square',
-         },
-         enableOrientation: true,
-         showZoomer: false,
-     });
-     croppedImage.bind({
-         url: currentImage,
-         orientation: orientation
-     });
-
-     setBackgroundImage(imageHandler, '');
-
-     confirmAction(target, getString('confirm', 'qtype_imageselect'), () => {
-         croppedImage.result('base64').then(imageData => {
-
-             let ajaxParams = {
-                 imagedata: imageData.split('base64,')[1],
-                 imagefilename: 'rotated.png',
-                 cropped: 1,
-                 component: target.getAttribute('data-component'),
-                 filearea: target.getAttribute('data-filearea'),
-                 contextid: target.getAttribute('data-contextid'),
-                 draftitemid: target.getAttribute('data-draftitemid')
-             };
-
-             showSpinner(target, true);
-
-             updateImage({params: ajaxParams}).then(result => {
-                 if (result.success) {
-                     setBackgroundImage(imageHandler, imageData);
-                     croppedImage.destroy();
-                 }
-                 if (result.warning) {
-                     showImageAlert(imageHandler, result.warning, 'warning');
-                 }
-                 showSpinner(target, false);
-                 showEditActions(target);
-                 return;
-             }).catch(Notification.exception);
-             return;
-         }).catch(Notification.exception);
-     });
-
-     cancelAction(target, () => {
-         croppedImage.destroy();
-         setBackgroundImage(imageHandler, currentImage);
-         showEditActions(target);
-     });
  };
+
  //End
  /**
   * Upload a new image.
@@ -517,9 +466,10 @@
      const deleteimage = target.querySelector(selectors.actions.deleteimage);
      const imagecontrols = target.querySelector(selectors.regions.imagecontrols);
 
-     // Actions on cropping
+
+  //   Actions on cropping
      cropimage.addEventListener('click', e => {
-        // imageCropper(target);
+        imageCropper(target);
         e.preventDefault();
      });
      // Actions on rotateleft
@@ -527,8 +477,9 @@
          imageRotator(target, -20);
          e.preventDefault();
      });
-     // Actions on rotateleft
+     // Actions on rotateright
      rotateright.addEventListener('click', e => {
+        //broken
          imageRotator(target, 20);
          e.preventDefault();
      });
