@@ -142,6 +142,9 @@ class qtype_imageselect_edit_form extends question_edit_form {
     }
 
     protected function definition_inner($mform) {
+        global $PAGE;
+        $PAGE->requires->css('/question/type/imageselect/amd/src/cropper.css');
+
         $mform->addElement('html', '<a href=./type/imageselect/test.html>Test file</a>');
         $mform->removeelement('questiontext');
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'), ['rows' => 5],
